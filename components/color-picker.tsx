@@ -32,21 +32,39 @@ export function ColorPicker() {
 		if (!showFavorites && !hasTagFilters) return colors;
 
 		return colors.filter((color) => {
-			const key = `${color.layout.live.col}-${color.layout.live.row}`;
+			const layoutData = color.layout[displayLayout];
+
+			if (!layoutData) return false;
+
+			const key = `${layoutData.col}-${layoutData.row}`;
+
 			const matchesFavorites = !showFavorites || favorites.has(key);
 			const matchesTags = selectedTags.every((tag) => color.tags.includes(tag));
+
 			return matchesFavorites && matchesTags;
 		});
-	}, [selectedTags, showFavorites, favorites]);
+	}, [selectedTags, showFavorites, favorites, displayLayout]);
 
 	const filteredColorKeys = useMemo(() => {
-		return new Set(filteredColors.map((c) => `${c.layout.live.col}-${c.layout.live.row}`));
-	}, [filteredColors]);
+		if (!showFavorites && selectedTags.length === 0) return null;
+
+		return new Set(
+			filteredColors
+				.map((c) => c.layout[displayLayout])
+				.filter(Boolean)
+				.map((layoutData) => `${layoutData!.col}-${layoutData!.row}`)
+		);
+	}, [filteredColors, displayLayout, showFavorites, selectedTags]);
 
 	useEffect(() => {
 		if (selectedColor) {
-			const selectedColorKey = `${selectedColor.layout.live.col}-${selectedColor.layout.live.row}`;
-			if (!filteredColorKeys.has(selectedColorKey)) {
+			const selectedLayoutData = selectedColor.layout[displayLayout];
+			if (selectedLayoutData) {
+				const selectedColorKey = `${selectedLayoutData.col}-${selectedLayoutData.row}`;
+				if (filteredColorKeys && !filteredColorKeys.has(selectedColorKey)) {
+					setSelectedColor(null);
+				}
+			} else {
 				setSelectedColor(null);
 			}
 		}
@@ -57,50 +75,72 @@ export function ColorPicker() {
 				setSelectedColor(onlyColor);
 			}
 		}
-	}, [selectedColor, filteredColorKeys, filteredColors]);
+	}, [selectedColor, filteredColorKeys, filteredColors, displayLayout]);
 
 	const tagCounts = useMemo(() => {
 		const counts: Record<string, number> = {};
 		for (const tag of otherTags) {
 			const tagsToCheck = selectedTags.includes(tag) ? selectedTags : [...selectedTags, tag];
 			const matchingColors = colors.filter((color) => {
-				const key = `${color.layout.live.col}-${color.layout.live.row}`;
+				const layoutData = color.layout[displayLayout];
+				if (!layoutData) return false;
+
+				const key = `${layoutData.col}-${layoutData.row}`;
 				const matchesFavorites = !showFavorites || favorites.has(key);
+
 				return matchesFavorites && tagsToCheck.every((t) => color.tags.includes(t));
 			});
 			counts[tag] = matchingColors.length;
 		}
+
 		return counts;
-	}, [selectedTags, showFavorites, favorites]);
+	}, [selectedTags, showFavorites, favorites, displayLayout]);
 
 	const colorGroupCounts = useMemo(() => {
 		const counts: Record<string, number> = {};
 		Object.entries(colorGroupHexMap).forEach(([tag]) => {
 			const tagsToCheck = selectedTags.includes(tag) ? selectedTags : [...selectedTags.filter((t) => !t.startsWith("cg:")), tag];
 			const matchingColors = colors.filter((color) => {
-				const key = `${color.layout.live.col}-${color.layout.live.row}`;
+				const layoutData = color.layout[displayLayout];
+				if (!layoutData) return false;
+
+				const key = `${layoutData.col}-${layoutData.row}`;
 				const matchesFavorites = !showFavorites || favorites.has(key);
+
 				return matchesFavorites && tagsToCheck.every((t) => color.tags.includes(t));
 			});
 			counts[tag] = matchingColors.length;
 		});
 
 		return counts;
-	}, [selectedTags, showFavorites, favorites]);
+	}, [selectedTags, showFavorites, favorites, displayLayout]);
 
 	const favoritesCount = useMemo(() => {
 		if (showFavorites) {
-			return favorites.size;
+			return colors.filter((color) => {
+				const layoutData = color.layout[displayLayout];
+				if (!layoutData) return false;
+				const key = `${layoutData.col}-${layoutData.row}`;
+				return favorites.has(key) && selectedTags.every((tag) => color.tags.includes(tag));
+			}).length;
 		}
+
 		return colors.filter((color) => {
-			const key = `${color.layout.live.col}-${color.layout.live.row}`;
+			const layoutData = color.layout[displayLayout];
+			if (!layoutData) return false;
+			const key = `${layoutData.col}-${layoutData.row}`;
 			return favorites.has(key) && selectedTags.every((tag) => color.tags.includes(tag));
 		}).length;
-	}, [favorites, selectedTags, showFavorites]);
+	}, [favorites, selectedTags, showFavorites, displayLayout]);
 
 	const favoriteColors = useMemo(() => {
-		return colors.filter((color) => favorites.has(`${color.layout.live.col}-${color.layout.live.row}`));
-	}, [favorites]);
+		return colors.filter((color) => {
+			const layoutData = color.layout[displayLayout];
+			if (!layoutData) return false;
+			const key = `${layoutData.col}-${layoutData.row}`;
+			return favorites.has(key);
+		});
+	}, [favorites, displayLayout]);
 
 	useEffect(() => {
 		if (favoritesCount === 0 && showFavorites === true) {
@@ -108,21 +148,34 @@ export function ColorPicker() {
 		}
 	}, [favoritesCount, showFavorites]);
 
-	const grid = Array.from({ length: TOTAL_ROWS }, (_, rowIndex) =>
-		Array.from({ length: TOTAL_COLS }, (_, colIndex) => {
-			const color = colors.find((c) => c.layout.live.row === rowIndex + 1 && c.layout.live.col === colIndex + 1);
-			if (!color) return null;
-			const isActive = filteredColorKeys === null || filteredColorKeys.has(`${color.layout.live.col}-${color.layout.live.row}`);
-			return { color, isActive };
-		})
-	);
+	const grid = useMemo(() => {
+		const newGrid: (ColorData | null)[][] = Array.from({ length: TOTAL_ROWS }, () => Array.from({ length: TOTAL_COLS }, () => null));
+
+		filteredColors.forEach((color) => {
+			const layoutData = color.layout[displayLayout];
+			if (layoutData) {
+				const { row, col } = layoutData;
+				if (row >= 1 && row <= TOTAL_ROWS && col >= 1 && col <= TOTAL_COLS) {
+					newGrid[row - 1][col - 1] = color;
+				}
+			}
+		});
+		return newGrid;
+	}, [filteredColors, displayLayout, TOTAL_COLS, TOTAL_ROWS]);
 
 	const handleCopy = async (color: ColorData) => {
 		const value = formatColor(color, format);
 		await navigator.clipboard.writeText(value);
-		const key = `${color.layout.live.col}-${color.layout.live.row}`;
-		setCopiedColorKey(key);
-		setTimeout(() => setCopiedColorKey(null), 1500);
+
+		const layoutData = color.layout[displayLayout];
+		if (layoutData) {
+			const key = `${layoutData.col}-${layoutData.row}`;
+			setCopiedColorKey(key);
+			setTimeout(() => setCopiedColorKey(null), 1500);
+		} else {
+			console.warn("Attempted to copy a color without layout data for the current display layout.");
+			setCopiedColorKey(null);
+		}
 	};
 
 	const toggleTag = (tag: string) => {
@@ -138,7 +191,15 @@ export function ColorPicker() {
 	};
 
 	const toggleFavorite = (color: ColorData) => {
-		const key = `${color.layout.live.col}-${color.layout.live.row}`;
+		const layoutData = color.layout[displayLayout];
+
+		if (!layoutData) {
+			console.warn("Attempted to favorite a color without layout data for the current display layout.");
+			return;
+		}
+
+		const key = `${layoutData.col}-${layoutData.row}`;
+
 		setFavorites((prev) => {
 			const next = new Set(prev);
 			if (next.has(key)) {
@@ -151,26 +212,31 @@ export function ColorPicker() {
 	};
 
 	const handleExport = () => {
-		const filteredColors =
-			filteredColorKeys === null ? colors : colors.filter((c) => filteredColorKeys.has(`${c.layout.live.col}-${c.layout.live.row}`));
+		const colorsToExport = filteredColors;
 
 		const exportData = {
 			format,
 			selectedTags: selectedTags.length > 0 ? selectedTags : undefined,
 			showFavoritesOnly: showFavorites || undefined,
-			colors: filteredColors.map((c) => ({
-				name: c.name,
-				value: formatColor(c, format),
-				tags: c.tags,
-				isFavorite: favorites.has(`${c.layout.live.col}-${c.layout.live.row}`) || undefined,
-			})),
+			colors: colorsToExport.map((c) => {
+				const layoutData = c.layout[displayLayout];
+
+				const favoriteKey = layoutData ? `${layoutData.col}-${layoutData.row}` : null;
+
+				return {
+					name: c.name,
+					value: formatColor(c, format),
+					tags: c.tags,
+					isFavorite: (favoriteKey && favorites.has(favoriteKey)) || undefined,
+				};
+			}),
 		};
 
 		const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = `ableton-colors-${format}.json`;
+		a.download = `ableton-colors-${format}-${displayLayout}.json`;
 		a.click();
 		URL.revokeObjectURL(url);
 	};
@@ -338,27 +404,19 @@ export function ColorPicker() {
 						</div>
 						{grid.map((row, rowIndex) => (
 							<div key={rowIndex} className="flex gap-1">
-								{row.map((cell, colIndex) => {
-									if (!cell) {
-										return <div key={colIndex} style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px` }} />;
+								{row.map((color, colIndex) => {
+									if (!color) {
+										return <div key={`empty-${rowIndex}-${colIndex}`} style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px` }} />;
 									}
-									const { color, isActive } = cell;
-									const colorKey = `${color.layout.live.col}-${color.layout.live.row}`;
+
+									const currentLayoutData = color.layout[displayLayout];
+									const colorKey = currentLayoutData ? `${currentLayoutData.col}-${currentLayoutData.row}` : `${color.hex}-no-layout`;
 									const isFavorited = favorites.has(colorKey);
-									if (!isActive) {
-										return (
-											<div
-												key={colorKey}
-												className="border border-dashed border-border opacity-30"
-												style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px` }}
-											/>
-										);
-									}
+
 									return (
 										<Tooltip key={colorKey}>
 											<TooltipTrigger asChild>
 												<button
-													key={colorKey}
 													onClick={() => {
 														setSelectedColor(color);
 														handleCopy(color);
@@ -475,7 +533,9 @@ export function ColorPicker() {
 					</div>
 					<div className="flex flex-col gap-1">
 						{favoriteColors.map((color) => {
-							const colorKey = `${color.layout.live.col}-${color.layout.live.row}`;
+							const layoutData = color.layout[displayLayout];
+							const colorKey = `${layoutData!.col}-${layoutData!.row}`;
+
 							return (
 								<button
 									key={colorKey}
