@@ -2,51 +2,30 @@
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ColorData, colorGroupHexMap, colors } from "@/data/colors";
+import { ColorData, colorGroupHexMap, colors, DisplayLayout } from "@/data/colors";
 import { cn } from "@/lib/utils";
-import { hexToHsl } from "@/utilities/hexToHsl";
-import { hexToRgb } from "@/utilities/hexToRgb";
+import { ColorFormat, formatColor } from "@/utilities/formatColor";
+import { getContrastColor } from "@/utilities/getContrastColor";
 import { Heart } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-type ColorFormat = "hex" | "rgb" | "hsl";
-
 const otherTags = Array.from(new Set(colors.flatMap((c) => c.tags.filter((t) => !t.startsWith("cg:"))))).sort();
 
-const TOTAL_COLS = 14;
-const TOTAL_ROWS = 5;
-const COLOR_SIZE = 50;
-const GAP_SIZE = 4;
-const TOTAL_WIDTH = TOTAL_COLS * COLOR_SIZE + (TOTAL_COLS - 1) * GAP_SIZE;
-
-function formatColor(color: ColorData, format: ColorFormat): string {
-	switch (format) {
-		case "hex":
-			return color.hex;
-		case "rgb": {
-			const rgb = hexToRgb(color.hex);
-			return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-		}
-		case "hsl": {
-			const hsl = hexToHsl(color.hex);
-			return `hsl(${hsl.h}°, ${hsl.s}%, ${hsl.l}%)`;
-		}
-	}
-}
-
-function getContrastColor(hex: string): string {
-	const { r, g, b } = hexToRgb(hex);
-	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-	return luminance > 0.5 ? "#000000" : "#FFFFFF";
-}
-
 export function ColorPicker() {
+	const [layout, setLayout] = useState<DisplayLayout>("live");
 	const [format, setFormat] = useState<ColorFormat>("hex");
 	const [selectedColor, setSelectedColor] = useState<ColorData | null>(null);
 	const [copiedColorKey, setCopiedColorKey] = useState<string | null>(null);
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [favorites, setFavorites] = useState<Set<string>>(new Set());
 	const [showFavorites, setShowFavorites] = useState(false);
+
+	const TOTAL_COLS = layout === "live" ? 14 : 8;
+	const TOTAL_ROWS = layout === "live" ? 5 : 8;
+	const COLOR_SIZE = 50;
+	const GAP_SIZE = 4;
+	const TOTAL_WIDTH = TOTAL_COLS * COLOR_SIZE + (TOTAL_COLS - 1) * GAP_SIZE;
+
 	const filteredColors = useMemo(() => {
 		const hasTagFilters = selectedTags.length > 0;
 
@@ -218,6 +197,25 @@ export function ColorPicker() {
 					>
 						export
 					</button>
+					<ToggleGroup
+						type="single"
+						value={layout}
+						onValueChange={(value) => value && setLayout(value as DisplayLayout)}
+						className="border border-border"
+					>
+						<ToggleGroupItem
+							value="live"
+							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
+						>
+							live
+						</ToggleGroupItem>
+						<ToggleGroupItem
+							value="push"
+							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
+						>
+							push
+						</ToggleGroupItem>
+					</ToggleGroup>
 					<ToggleGroup
 						type="single"
 						value={format}

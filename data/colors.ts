@@ -1,3 +1,4 @@
+import { PartialBy } from "@/types/PartialBy";
 import { Prepend } from "@/types/Prepend";
 
 const colorGroupings = [
@@ -34,11 +35,17 @@ export type ColorTag = ColorGroupTag | DefinedColorTag | (string & {});
 
 type Layout = { col: number; row: number };
 
+export const displayLayouts = ["live", "push"] as const;
+export type DisplayLayout = (typeof displayLayouts)[number];
+
+export type DisplayLayoutsRecord = {
+	[K in DisplayLayout]: Layout;
+};
+
+export type DisplayLayouts = PartialBy<DisplayLayoutsRecord, "push">;
+
 export interface ColorData {
-	layout: {
-		live: Layout;
-		push?: Layout;
-	};
+	layout: DisplayLayouts;
 	hex: string;
 	name: string;
 	tags: ColorTag[];
