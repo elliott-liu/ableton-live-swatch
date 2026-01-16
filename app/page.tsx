@@ -1,11 +1,9 @@
-import { ColorPicker } from "@/components/color-picker"
+import { ColorPicker } from "@/components/ColourPicker";
 
 export default function Page() {
-  return (
-    <main className="min-h-screen bg-background p-8">
-      <div className="max-w-3xl mx-auto">
-        <ColorPicker />
-      </div>
-    </main>
-  )
+	return (
+		<main className="min-h-screen px-4">
+			<ColorPicker />
+		</main>
+	);
 }

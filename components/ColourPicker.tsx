@@ -22,8 +22,7 @@ export function ColorPicker() {
 
 	const TOTAL_COLS = displayLayout === "live" ? 14 : 8;
 	const TOTAL_ROWS = displayLayout === "live" ? 5 : 8;
-	const COLOR_SIZE = 50;
-
+	const COLOR_SIZE = 60;
 	const filteredColors = useMemo(() => {
 		const hasTagFilters = selectedTags.length > 0;
 
@@ -240,9 +239,8 @@ export function ColorPicker() {
 	};
 
 	return (
-		<div className="flex flex-col gap-4 max-w-7xl mx-auto">
-			<div className="flex items-center justify-between">
-				<h2 className="text-lg font-semibold text-foreground">Ableton Live Swatch</h2>
+		<div className="max-w-7xl mx-auto flex flex-col gap-4">
+			<div className="flex items-center justify-between w-full">
 				<div className="flex items-center gap-2">
 					{favorites.size > 0 && (
 						<button
@@ -381,7 +379,7 @@ export function ColorPicker() {
 										onClick={() => !isDisabled && toggleTag(tag)}
 										disabled={isDisabled}
 										className={cn(
-											"flex items-center justify-center text-xs font-medium transition-colors",
+											"flex items-center justify-center text-xs font-medium transition-colors relative flex-none",
 											isDisabled
 												? "opacity-30 cursor-not-allowed"
 												: isSelected
@@ -390,7 +388,7 @@ export function ColorPicker() {
 										)}
 										style={{
 											width: `${COLOR_SIZE}px`,
-											height: `${COLOR_SIZE * 0.5}px`,
+											height: `${COLOR_SIZE / 2}px`,
 											backgroundColor: tagColor,
 											color: textColor,
 										}}
@@ -430,7 +428,7 @@ export function ColorPicker() {
 														toggleFavorite(color);
 													}}
 													className={cn(
-														"group relative transition-all hover:scale-110 hover:z-10 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center",
+														"group relative transition-all hover:scale-110 hover:z-10 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center aspect-square",
 														selectedColor?.hex === color.hex && "ring-2 ring-foreground"
 													)}
 													style={{
@@ -450,8 +448,8 @@ export function ColorPicker() {
 															className={cn(
 																"w-3 h-3 absolute top-1 left-1",
 																"transition-opacity duration-150 ease-in-out",
-																isFavorited && "opacity-25 fill-current hover:fill-none",
-																!isFavorited && "opacity-0 fill-none hover:fill-current group-hover:opacity-25 group-hover:fill-none"
+																isFavorited && "opacity-50 fill-current hover:fill-none",
+																!isFavorited && "opacity-0 fill-none hover:fill-current group-hover:opacity-50 group-hover:fill-none"
 															)}
 															style={{ color: getContrastColor(color.hex) }}
 														/>
