@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { hexToHsl } from "@/utilities/hexToHsl";
 import { hexToRgb } from "@/utilities/hexToRgb";
 import { Heart } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type ColorFormat = "hex" | "rgb" | "hsl";
 
@@ -46,22 +46,39 @@ export function ColorPicker() {
 	const [copiedColorKey, setCopiedColorKey] = useState<string | null>(null);
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [favorites, setFavorites] = useState<Set<string>>(new Set());
-	const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-
-	const filteredColorKeys = useMemo(() => {
-		const hasFavoritesFilter = showFavoritesOnly;
+	const [showFavorites, setShowFavorites] = useState(false);
+	const filteredColors = useMemo(() => {
 		const hasTagFilters = selectedTags.length > 0;
 
-		if (!hasFavoritesFilter && !hasTagFilters) return null;
+		if (!showFavorites && !hasTagFilters) return colors;
 
-		const filtered = colors.filter((color) => {
+		return colors.filter((color) => {
 			const key = `${color.layout.live.col}-${color.layout.live.row}`;
-			const matchesFavorites = !hasFavoritesFilter || favorites.has(key);
+			const matchesFavorites = !showFavorites || favorites.has(key);
 			const matchesTags = selectedTags.every((tag) => color.tags.includes(tag));
 			return matchesFavorites && matchesTags;
 		});
-		return new Set(filtered.map((c) => `${c.layout.live.col}-${c.layout.live.row}`));
-	}, [selectedTags, showFavoritesOnly, favorites]);
+	}, [selectedTags, showFavorites, favorites]);
+
+	const filteredColorKeys = useMemo(() => {
+		return new Set(filteredColors.map((c) => `${c.layout.live.col}-${c.layout.live.row}`));
+	}, [filteredColors]);
+
+	useEffect(() => {
+		if (selectedColor) {
+			const selectedColorKey = `${selectedColor.layout.live.col}-${selectedColor.layout.live.row}`;
+			if (!filteredColorKeys.has(selectedColorKey)) {
+				setSelectedColor(null);
+			}
+		}
+
+		if (filteredColors.length === 1) {
+			const onlyColor = filteredColors[0];
+			if (selectedColor?.hex !== onlyColor.hex) {
+				setSelectedColor(onlyColor);
+			}
+		}
+	}, [selectedColor, filteredColorKeys, filteredColors]);
 
 	const tagCounts = useMemo(() => {
 		const counts: Record<string, number> = {};
@@ -69,13 +86,13 @@ export function ColorPicker() {
 			const tagsToCheck = selectedTags.includes(tag) ? selectedTags : [...selectedTags, tag];
 			const matchingColors = colors.filter((color) => {
 				const key = `${color.layout.live.col}-${color.layout.live.row}`;
-				const matchesFavorites = !showFavoritesOnly || favorites.has(key);
+				const matchesFavorites = !showFavorites || favorites.has(key);
 				return matchesFavorites && tagsToCheck.every((t) => color.tags.includes(t));
 			});
 			counts[tag] = matchingColors.length;
 		}
 		return counts;
-	}, [selectedTags, showFavoritesOnly, favorites]);
+	}, [selectedTags, showFavorites, favorites]);
 
 	const colorGroupCounts = useMemo(() => {
 		const counts: Record<string, number> = {};
@@ -83,28 +100,34 @@ export function ColorPicker() {
 			const tagsToCheck = selectedTags.includes(tag) ? selectedTags : [...selectedTags.filter((t) => !t.startsWith("cg:")), tag];
 			const matchingColors = colors.filter((color) => {
 				const key = `${color.layout.live.col}-${color.layout.live.row}`;
-				const matchesFavorites = !showFavoritesOnly || favorites.has(key);
+				const matchesFavorites = !showFavorites || favorites.has(key);
 				return matchesFavorites && tagsToCheck.every((t) => color.tags.includes(t));
 			});
 			counts[tag] = matchingColors.length;
 		});
 
 		return counts;
-	}, [selectedTags, showFavoritesOnly, favorites]);
+	}, [selectedTags, showFavorites, favorites]);
 
 	const favoritesCount = useMemo(() => {
-		if (showFavoritesOnly) {
+		if (showFavorites) {
 			return favorites.size;
 		}
 		return colors.filter((color) => {
 			const key = `${color.layout.live.col}-${color.layout.live.row}`;
 			return favorites.has(key) && selectedTags.every((tag) => color.tags.includes(tag));
 		}).length;
-	}, [favorites, selectedTags, showFavoritesOnly]);
+	}, [favorites, selectedTags, showFavorites]);
 
 	const favoriteColors = useMemo(() => {
 		return colors.filter((color) => favorites.has(`${color.layout.live.col}-${color.layout.live.row}`));
 	}, [favorites]);
+
+	useEffect(() => {
+		if (favoritesCount === 0 && showFavorites === true) {
+			setShowFavorites(false);
+		}
+	}, [favoritesCount, showFavorites]);
 
 	const grid = Array.from({ length: TOTAL_ROWS }, (_, rowIndex) =>
 		Array.from({ length: TOTAL_COLS }, (_, colIndex) => {
@@ -155,7 +178,7 @@ export function ColorPicker() {
 		const exportData = {
 			format,
 			selectedTags: selectedTags.length > 0 ? selectedTags : undefined,
-			showFavoritesOnly: showFavoritesOnly || undefined,
+			showFavoritesOnly: showFavorites || undefined,
 			colors: filteredColors.map((c) => ({
 				name: c.name,
 				value: formatColor(c, format),
@@ -182,7 +205,7 @@ export function ColorPicker() {
 						<button
 							onClick={() => {
 								setFavorites(new Set());
-								setShowFavoritesOnly(false);
+								setShowFavorites(false);
 							}}
 							className="px-2 py-0.5 text-xs border border-border text-foreground hover:bg-muted transition-colors"
 						>
@@ -195,22 +218,27 @@ export function ColorPicker() {
 					>
 						export
 					</button>
-					<ToggleGroup type="single" value={format} onValueChange={(value) => value && setFormat(value as ColorFormat)} className="gap-1">
+					<ToggleGroup
+						type="single"
+						value={format}
+						onValueChange={(value) => value && setFormat(value as ColorFormat)}
+						className="border border-border"
+					>
 						<ToggleGroupItem
 							value="hex"
-							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none border border-border shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
+							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
 						>
 							hex
 						</ToggleGroupItem>
 						<ToggleGroupItem
 							value="rgb"
-							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none border border-border shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
+							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
 						>
 							rgb
 						</ToggleGroupItem>
 						<ToggleGroupItem
 							value="hsl"
-							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none border border-border shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
+							className="h-auto px-2 py-0.5 text-xs font-medium rounded-none shadow-none data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground"
 						>
 							hsl
 						</ToggleGroupItem>
@@ -221,20 +249,20 @@ export function ColorPicker() {
 			<div className="flex flex-col gap-1">
 				<div className="flex flex-wrap gap-1">
 					<button
-						onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-						disabled={favoritesCount === 0 && !showFavoritesOnly}
+						onClick={() => setShowFavorites(!showFavorites)}
+						disabled={favoritesCount === 0 && !showFavorites}
 						className={cn(
 							"px-2 py-0.5 text-xs border transition-colors flex items-center gap-1",
-							favoritesCount === 0 && !showFavoritesOnly
+							favoritesCount === 0 && !showFavorites
 								? "bg-muted text-muted-foreground/50 border-border/50 cursor-not-allowed"
-								: showFavoritesOnly
+								: showFavorites
 								? "bg-foreground text-background border-foreground"
 								: "bg-background text-foreground border-border hover:bg-muted"
 						)}
 					>
-						<Heart className="w-3 h-3" fill={showFavoritesOnly ? "currentColor" : "none"} />
+						<Heart className="w-3 h-3" fill={favoritesCount === 0 ? "none" : "currentColor"} />
 						{favoritesCount > 0 && (
-							<span className={cn(showFavoritesOnly ? "text-background/60" : "text-muted-foreground")}>· {favoritesCount}</span>
+							<span className={cn(showFavorites ? "text-background/60" : "text-muted-foreground")}>· {favoritesCount}</span>
 						)}
 					</button>
 					{otherTags.map((tag) => {
@@ -263,11 +291,11 @@ export function ColorPicker() {
 							</button>
 						);
 					})}
-					{(selectedTags.length > 0 || showFavoritesOnly) && (
+					{(selectedTags.length > 0 || showFavorites) && (
 						<button
 							onClick={() => {
 								setSelectedTags([]);
-								setShowFavoritesOnly(false);
+								setShowFavorites(false);
 							}}
 							className="px-2 py-0.5 text-xs border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
 						>
@@ -332,6 +360,7 @@ export function ColorPicker() {
 										<Tooltip key={colorKey}>
 											<TooltipTrigger asChild>
 												<button
+													key={colorKey}
 													onClick={() => {
 														setSelectedColor(color);
 														handleCopy(color);
@@ -341,25 +370,38 @@ export function ColorPicker() {
 														toggleFavorite(color);
 													}}
 													className={cn(
-														"relative transition-all hover:scale-110 hover:z-10 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center",
+														"group relative transition-all hover:scale-110 hover:z-10 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center",
 														selectedColor?.hex === color.hex && "ring-2 ring-foreground"
 													)}
-													style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px`, backgroundColor: color.hex }}
+													style={{
+														width: `${COLOR_SIZE}px`,
+														height: `${COLOR_SIZE}px`,
+														backgroundColor: color.hex,
+													}}
 													aria-label={`Select ${color.name}`}
 												>
-													{isFavorited && (
+													<div
+														onClick={(e) => {
+															e.stopPropagation();
+															toggleFavorite(color);
+														}}
+													>
 														<Heart
-															className="w-3 h-3 absolute top-1 left-1 opacity-25"
-															fill="currentColor"
+															className={cn(
+																"w-3 h-3 absolute top-1 left-1",
+																"transition-opacity duration-150 ease-in-out",
+																isFavorited && "opacity-25 fill-current hover:fill-none",
+																!isFavorited && "opacity-0 fill-none hover:fill-current group-hover:opacity-25 group-hover:fill-none"
+															)}
 															style={{ color: getContrastColor(color.hex) }}
 														/>
-													)}
+													</div>
 													{copiedColorKey === colorKey && (
 														<span
 															className="text-[10px] font-medium animate-in fade-in-0 zoom-in-95"
 															style={{ color: getContrastColor(color.hex) }}
 														>
-															copied
+															copied!
 														</span>
 													)}
 												</button>
@@ -368,20 +410,11 @@ export function ColorPicker() {
 												side="top"
 												className="px-3 py-2 text-sm font-medium rounded-none border-none"
 												style={{ backgroundColor: color.hex, color: getContrastColor(color.hex) }}
-												arrowClassName="rounded-none"
+												arrowClassName="rounded-none z-0 relative"
 												arrowStyle={{ backgroundColor: color.hex, fill: color.hex }}
 											>
 												<div className="flex items-center gap-2">
 													<p className="font-semibold">{color.name}</p>
-													<button
-														onClick={(e) => {
-															e.stopPropagation();
-															toggleFavorite(color);
-														}}
-														className="hover:opacity-80 transition-opacity"
-													>
-														<Heart className="w-3.5 h-3.5" fill="currentColor" />
-													</button>
 												</div>
 												<p className="text-xs mt-0.5 opacity-80">{formatColor(color, format)}</p>
 												<div className="flex flex-wrap gap-1 mt-1.5">
@@ -392,7 +425,7 @@ export function ColorPicker() {
 																e.stopPropagation();
 																toggleTag(tag);
 															}}
-															className="px-1.5 py-0.5 text-xs lowercase transition-opacity hover:opacity-80"
+															className="px-1.5 py-0.5 text-xs lowercase transition-opacity hover:opacity-60 z-10"
 															style={{
 																backgroundColor: getContrastColor(color.hex),
 																color: color.hex,
@@ -422,7 +455,7 @@ export function ColorPicker() {
 								<button
 									key={tag}
 									onClick={() => toggleTag(tag)}
-									className="px-1.5 py-0.5 text-xs lowercase transition-opacity hover:opacity-80"
+									className="px-1.5 py-0.5 text-xs lowercase transition-opacity hover:opacity-60"
 									style={{
 										backgroundColor: getContrastColor(selectedColor.hex),
 										color: selectedColor.hex,
@@ -463,7 +496,7 @@ export function ColorPicker() {
 										<span className="font-semibold">{color.name}</span>
 										<span className="text-xs opacity-80">{formatColor(color, format)}</span>
 									</div>
-									{copiedColorKey === colorKey && <span className="text-[10px] font-medium animate-in fade-in-0 zoom-in-95">copied</span>}
+									{copiedColorKey === colorKey && <span className="text-[10px] font-medium animate-in fade-in-0 zoom-in-95">copied!</span>}
 								</button>
 							);
 						})}
