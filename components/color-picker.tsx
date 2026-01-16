@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 const otherTags = Array.from(new Set(colors.flatMap((c) => c.tags.filter((t) => !t.startsWith("cg:"))))).sort();
 
 export function ColorPicker() {
-	const [layout, setLayout] = useState<DisplayLayout>("live");
+	const [displayLayout, setDisplayLayout] = useState<DisplayLayout>("live");
 	const [format, setFormat] = useState<ColorFormat>("hex");
 	const [selectedColor, setSelectedColor] = useState<ColorData | null>(null);
 	const [copiedColorKey, setCopiedColorKey] = useState<string | null>(null);
@@ -20,8 +20,8 @@ export function ColorPicker() {
 	const [favorites, setFavorites] = useState<Set<string>>(new Set());
 	const [showFavorites, setShowFavorites] = useState(false);
 
-	const TOTAL_COLS = layout === "live" ? 14 : 8;
-	const TOTAL_ROWS = layout === "live" ? 5 : 8;
+	const TOTAL_COLS = displayLayout === "live" ? 14 : 8;
+	const TOTAL_ROWS = displayLayout === "live" ? 5 : 8;
 	const COLOR_SIZE = 50;
 	const GAP_SIZE = 4;
 	const TOTAL_WIDTH = TOTAL_COLS * COLOR_SIZE + (TOTAL_COLS - 1) * GAP_SIZE;
@@ -199,8 +199,8 @@ export function ColorPicker() {
 					</button>
 					<ToggleGroup
 						type="single"
-						value={layout}
-						onValueChange={(value) => value && setLayout(value as DisplayLayout)}
+						value={displayLayout}
+						onValueChange={(value) => value && setDisplayLayout(value as DisplayLayout)}
 						className="border border-border"
 					>
 						<ToggleGroupItem
