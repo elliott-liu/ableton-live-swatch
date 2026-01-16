@@ -1,4 +1,3 @@
-"use client";
 import { hexToRgb } from "@/utilities/hexToRgb";
 
 export function hexToHsl(hex: string): { h: number; s: number; l: number } {

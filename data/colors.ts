@@ -1,5 +1,3 @@
-"use client";
-
 import { Prepend } from "@/types/Prepend";
 
 const colorGroupings = [
