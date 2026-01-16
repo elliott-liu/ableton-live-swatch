@@ -56,6 +56,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 1, row: 1 },
+			push: { col: 3, row: 8 },
 		},
 		hex: "#ff94a6",
 		name: "Salmon",
@@ -64,6 +65,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 1, row: 2 },
+			push: { col: 2, row: 8 },
 		},
 		hex: "#ff3636",
 		name: "Fire Hydrant Red",
@@ -97,6 +99,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 2, row: 1 },
+			push: { col: 1, row: 8 },
 		},
 		hex: "#ffa529",
 		name: "Frank Orange",
@@ -105,6 +108,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 2, row: 2 },
+			push: { col: 1, row: 7 },
 		},
 		hex: "#f66c03",
 		name: "Tangerine",
@@ -138,6 +142,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 3, row: 1 },
+			push: { col: 1, row: 5 },
 		},
 		hex: "#cc9927",
 		name: "Dirty Gold",
@@ -146,6 +151,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 3, row: 2 },
+			push: { col: 1, row: 6 },
 		},
 		hex: "#99724b",
 		name: "Sand",
@@ -179,6 +185,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 4, row: 1 },
+			push: { col: 1, row: 4 },
 		},
 		hex: "#f7f47c",
 		name: "Lemonade",
@@ -187,6 +194,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 4, row: 2 },
+			push: { col: 1, row: 3 },
 		},
 		hex: "#fff034",
 		name: "Sunshine Yellow",
@@ -220,6 +228,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 5, row: 1 },
+			push: { col: 1, row: 2 },
 		},
 		hex: "#bffb00",
 		name: "Lime",
@@ -228,6 +237,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 5, row: 2 },
+			push: { col: 1, row: 1 },
 		},
 		hex: "#87ff67",
 		name: "Terminal Green",
@@ -261,6 +271,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 6, row: 1 },
+			push: { col: 2, row: 1 },
 		},
 		hex: "#1aff2f",
 		name: "Highlighter Green",
@@ -269,6 +280,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 6, row: 2 },
+			push: { col: 3, row: 1 },
 		},
 		hex: "#3dc300",
 		name: "Forest",
@@ -302,6 +314,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 7, row: 1 },
+			push: { col: 4, row: 1 },
 		},
 		hex: "#25ffa8",
 		name: "Bianchi",
@@ -310,6 +323,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 7, row: 2 },
+			push: { col: 5, row: 1 },
 		},
 		hex: "#00bfaf",
 		name: "Tiffany Blue",
@@ -343,6 +357,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 8, row: 1 },
+			push: { col: 6, row: 1 },
 		},
 		hex: "#5cffe8",
 		name: "Turquoise",
@@ -351,6 +366,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 8, row: 2 },
+			push: { col: 7, row: 1 },
 		},
 		hex: "#19e9ff",
 		name: "Cyan",
@@ -384,6 +400,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 9, row: 1 },
+			push: { col: 8, row: 1 },
 		},
 		hex: "#8bc5ff",
 		name: "Sky Blue",
@@ -392,6 +409,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 9, row: 2 },
+			push: { col: 8, row: 2 },
 		},
 		hex: "#10a4ee",
 		name: "Cerulean",
@@ -425,6 +443,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 10, row: 1 },
+			push: { col: 8, row: 3 },
 		},
 		hex: "#5480e4",
 		name: "Sapphire",
@@ -433,6 +452,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 10, row: 2 },
+			push: { col: 8, row: 4 },
 		},
 		hex: "#007dc0",
 		name: "United Nations Blue",
@@ -444,7 +464,7 @@ export const colors: ColorData[] = [
 		},
 		hex: "#b9c1e3",
 		name: "Periwinkle",
-		tags: ["cg:blue", "push", "pastel", "cool"],
+		tags: ["cg:blue", "pastel", "cool"],
 	},
 	{
 		layout: {
@@ -466,14 +486,16 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 11, row: 1 },
+			push: { col: 8, row: 5 },
 		},
 		hex: "#92a7ff",
 		name: "Periwinkle",
-		tags: ["cg:violet", "pastel", "cool"],
+		tags: ["cg:violet", "push", "pastel", "cool"],
 	},
 	{
 		layout: {
 			live: { col: 11, row: 2 },
+			push: { col: 8, row: 6 },
 		},
 		hex: "#886ce4",
 		name: "Amethyst",
@@ -507,6 +529,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 12, row: 1 },
+			push: { col: 8, row: 7 },
 		},
 		hex: "#d86ce4",
 		name: "Orchid",
@@ -515,6 +538,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 12, row: 2 },
+			push: { col: 8, row: 8 },
 		},
 		hex: "#b677c6",
 		name: "Iris",
@@ -548,6 +572,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 13, row: 1 },
+			push: { col: 7, row: 8 },
 		},
 		hex: "#e553a0",
 		name: "Magenta",
@@ -556,6 +581,7 @@ export const colors: ColorData[] = [
 	{
 		layout: {
 			live: { col: 13, row: 2 },
+			push: { col: 6, row: 8 },
 		},
 		hex: "#ff39d4",
 		name: "Flamingo",
