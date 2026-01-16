@@ -23,8 +23,6 @@ export function ColorPicker() {
 	const TOTAL_COLS = displayLayout === "live" ? 14 : 8;
 	const TOTAL_ROWS = displayLayout === "live" ? 5 : 8;
 	const COLOR_SIZE = 50;
-	const GAP_SIZE = 4;
-	const TOTAL_WIDTH = TOTAL_COLS * COLOR_SIZE + (TOTAL_COLS - 1) * GAP_SIZE;
 
 	const filteredColors = useMemo(() => {
 		const hasTagFilters = selectedTags.length > 0;
@@ -242,7 +240,7 @@ export function ColorPicker() {
 	};
 
 	return (
-		<div className="flex flex-col gap-4" style={{ width: `${TOTAL_WIDTH}px` }}>
+		<div className="flex flex-col gap-4 max-w-7xl mx-auto">
 			<div className="flex items-center justify-between">
 				<h2 className="text-lg font-semibold text-foreground">Ableton Live Swatch</h2>
 				<div className="flex items-center gap-2">
@@ -406,7 +404,13 @@ export function ColorPicker() {
 							<div key={rowIndex} className="flex gap-1">
 								{row.map((color, colIndex) => {
 									if (!color) {
-										return <div key={`empty-${rowIndex}-${colIndex}`} style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px` }} />;
+										return (
+											<div
+												className="w-50px"
+												key={`empty-${rowIndex}-${colIndex}`}
+												style={{ width: `${COLOR_SIZE}px`, height: `${COLOR_SIZE}px` }}
+											/>
+										);
 									}
 
 									const currentLayoutData = color.layout[displayLayout];
