@@ -1,5 +1,6 @@
 "use client";
 
+import Tags from "@/components/Tags";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ColorData, colorGroupHexMap, colors, DisplayLayout } from "@/data/colors";
@@ -73,25 +74,6 @@ export function ColorPicker() {
 			}
 		}
 	}, [selectedColor, filteredColorKeys, filteredColors, displayLayout]);
-
-	const tagCounts = useMemo(() => {
-		const counts: Record<string, number> = {};
-		for (const tag of otherTags) {
-			const tagsToCheck = selectedTags.includes(tag) ? selectedTags : [...selectedTags, tag];
-			const matchingColors = colors.filter((color) => {
-				const layoutData = color.layout[displayLayout];
-				if (!layoutData) return false;
-
-				const key = `${layoutData.col}-${layoutData.row}`;
-				const matchesFavorites = !showFavorites || favorites.has(key);
-
-				return matchesFavorites && tagsToCheck.every((t) => color.tags.includes(t));
-			});
-			counts[tag] = matchingColors.length;
-		}
-
-		return counts;
-	}, [selectedTags, showFavorites, favorites, displayLayout]);
 
 	const colorGroupCounts = useMemo(() => {
 		const counts: Record<string, number> = {};
@@ -307,62 +289,18 @@ export function ColorPicker() {
 			</div>
 
 			<div className="flex flex-col gap-1">
-				<div className="flex flex-wrap gap-1">
-					<button
-						onClick={() => setShowFavorites(!showFavorites)}
-						disabled={favoritesCount === 0 && !showFavorites}
-						className={cn(
-							"px-2 py-0.5 text-xs border transition-colors flex items-center gap-1",
-							favoritesCount === 0 && !showFavorites
-								? "bg-muted text-muted-foreground/50 border-border/50 cursor-not-allowed"
-								: showFavorites
-								? "bg-foreground text-background border-foreground"
-								: "bg-background text-foreground border-border hover:bg-muted"
-						)}
-					>
-						<Heart className="w-3 h-3" fill={favoritesCount === 0 ? "none" : "currentColor"} />
-						{favoritesCount > 0 && (
-							<span className={cn(showFavorites ? "text-background/60" : "text-muted-foreground")}>· {favoritesCount}</span>
-						)}
-					</button>
-					{otherTags.map((tag) => {
-						const count = tagCounts[tag];
-						const isDisabled = count === 0;
-						return (
-							<button
-								key={tag}
-								onClick={() => !isDisabled && toggleTag(tag)}
-								disabled={isDisabled}
-								className={cn(
-									"px-2 py-0.5 text-xs border transition-colors lowercase",
-									isDisabled
-										? "bg-muted text-muted-foreground/50 border-border/50 cursor-not-allowed"
-										: selectedTags.includes(tag)
-										? "bg-foreground text-background border-foreground"
-										: "bg-background text-foreground border-border hover:bg-muted"
-								)}
-							>
-								{tag}
-								{count > 0 && (
-									<span className={cn("ml-0.5", selectedTags.includes(tag) ? "text-background/60" : "text-muted-foreground")}>
-										· {count}
-									</span>
-								)}
-							</button>
-						);
-					})}
-					{(selectedTags.length > 0 || showFavorites) && (
-						<button
-							onClick={() => {
-								setSelectedTags([]);
-								setShowFavorites(false);
-							}}
-							className="px-2 py-0.5 text-xs border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-						>
-							clear all
-						</button>
-					)}
-				</div>
+				<Tags
+					colors={colors}
+					displayLayout={displayLayout}
+					favorites={favorites}
+					favoritesCount={favoritesCount}
+					selectedTags={selectedTags}
+					setSelectedTags={setSelectedTags}
+					setShowFavorites={setShowFavorites}
+					showFavorites={showFavorites}
+					tags={otherTags}
+					toggleTag={toggleTag}
+				/>
 
 				<TooltipProvider delayDuration={0}>
 					<div className="flex flex-col gap-1">
