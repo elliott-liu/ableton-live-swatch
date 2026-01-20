@@ -1,9 +1,10 @@
+import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
 import { DisplayItem } from "@/components/Swatch";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { DisplayLayout } from "@/data/colors";
+import { ColorTag, DisplayLayout } from "@/data/colors";
 import { ColorFormat } from "@/utilities/formatColor";
 
 export default function Tools({
@@ -12,22 +13,28 @@ export default function Tools({
 	displayLayout,
 	favorites,
 	handleExport,
+	selectedTags,
 	setColorFormat,
 	setDisplayItems,
 	setDisplayLayout,
 	setFavorites,
+	setSelectedTags,
 	setShowFavorites,
+	showFavorites,
 }: {
 	colorFormat: ColorFormat;
 	displayItems: DisplayItem[];
 	displayLayout: DisplayLayout;
 	favorites: Set<string>;
 	handleExport: () => void;
+	selectedTags: ColorTag[];
 	setColorFormat: Dispatch<SetStateAction<ColorFormat>>;
 	setDisplayItems: Dispatch<SetStateAction<DisplayItem[]>>;
 	setDisplayLayout: Dispatch<SetStateAction<DisplayLayout>>;
 	setFavorites: Dispatch<SetStateAction<Set<string>>>;
+	setSelectedTags: Dispatch<SetStateAction<ColorTag[]>>;
 	setShowFavorites: Dispatch<SetStateAction<boolean>>;
+	showFavorites: boolean;
 }) {
 	return (
 		<div className="flex w-full flex-wrap gap-1">
@@ -40,6 +47,20 @@ export default function Tools({
 					variant={"outline"}
 				>
 					clear favorites
+				</Button>
+			)}
+			{(selectedTags.length > 0 || showFavorites) && (
+				<Button
+					onClick={() => {
+						setSelectedTags([]);
+						setShowFavorites(false);
+					}}
+					variant={"outline"}
+					disabled={!(selectedTags.length > 0 || showFavorites)}
+					role="clear tags"
+				>
+					<X className="size-3" />
+					<span>clear tag{selectedTags.length > 1 && "s"}</span>
 				</Button>
 			)}
 			<ToggleGroup

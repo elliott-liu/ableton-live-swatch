@@ -222,17 +222,19 @@ export function Swatch() {
 					displayLayout={displayLayout}
 					favorites={favorites}
 					handleExport={handleExport}
+					selectedTags={selectedTags}
 					setColorFormat={setColorFormat}
 					setDisplayItems={setDisplayItems}
 					setDisplayLayout={setDisplayLayout}
 					setFavorites={setFavorites}
+					setSelectedTags={setSelectedTags}
 					setShowFavorites={setShowFavorites}
+					showFavorites={showFavorites}
 				/>
 				<Tags
 					displayLayout={displayLayout}
 					favoritesCount={favoritesCount}
 					selectedTags={selectedTags}
-					setSelectedTags={setSelectedTags}
 					setShowFavorites={setShowFavorites}
 					showFavorites={showFavorites}
 					tagCounts={tagCounts}
@@ -256,8 +258,8 @@ export function Swatch() {
 			</div>
 			{selectedColor && (
 				<ColorChip
-					format={colorFormat}
 					color={selectedColor}
+					format={colorFormat}
 					toggleTag={toggleTag}
 				/>
 			)}

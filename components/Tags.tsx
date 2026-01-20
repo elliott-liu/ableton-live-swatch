@@ -1,7 +1,6 @@
-import { Heart, X } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { ColorTag, DisplayLayout, colorGroupHexMap } from "@/data/colors";
 import { cn } from "@/lib/utils";
@@ -11,7 +10,6 @@ export default function Tags({
 	displayLayout,
 	favoritesCount,
 	selectedTags,
-	setSelectedTags,
 	setShowFavorites,
 	showFavorites,
 	tagCounts,
@@ -21,7 +19,6 @@ export default function Tags({
 	displayLayout: DisplayLayout;
 	favoritesCount: number;
 	selectedTags: ColorTag[];
-	setSelectedTags: Dispatch<SetStateAction<ColorTag[]>>;
 	setShowFavorites: Dispatch<SetStateAction<boolean>>;
 	showFavorites: boolean;
 	tagCounts: Record<ColorTag, number>;
@@ -34,20 +31,6 @@ export default function Tags({
 	return (
 		<div className="flex w-full flex-row flex-wrap gap-1">
 			<div className="flex flex-wrap gap-1">
-				{(selectedTags.length > 0 || showFavorites) && (
-					<Button
-						onClick={() => {
-							setSelectedTags([]);
-							setShowFavorites(false);
-						}}
-						variant={"outline"}
-						disabled={!(selectedTags.length > 0 || showFavorites)}
-						role="clear tags"
-					>
-						<X className="size-3" />
-						<span>clear tag{selectedTags.length > 1 && "s"}</span>
-					</Button>
-				)}
 				<Toggle
 					variant={"outline"}
 					disabled={favoritesCount === 0 && !showFavorites}
