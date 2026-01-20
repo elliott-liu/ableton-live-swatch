@@ -30,7 +30,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" className="light" style={{ colorScheme: "light" }}>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} mx-auto max-w-7xl px-4 antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} mx-auto max-w-7xl px-1 antialiased md:px-2 lg:px-4`}
 			>
 				<ThemeProvider
 					attribute="class"

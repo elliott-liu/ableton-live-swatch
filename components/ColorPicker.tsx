@@ -119,6 +119,7 @@ export default function ColorPicker({
 											aria-label={`Select ${color.name}`}
 										>
 											<div
+												className="hidden md:block"
 												onClick={(e) => {
 													e.stopPropagation();
 													setSelectedColor(color);
@@ -137,7 +138,7 @@ export default function ColorPicker({
 													style={{ color: getContrastColor(color.hex) }}
 												/>
 											</div>
-											<div className="group">
+											<div className="group hidden md:block">
 												{copiedColorKey === colorKey ? (
 													<Check
 														className={cn(

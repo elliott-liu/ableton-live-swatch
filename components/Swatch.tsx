@@ -214,7 +214,7 @@ export function Swatch() {
 	};
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-1 lg:gap-4">
 			<div className="flex w-full flex-col items-center gap-1">
 				<Tools
 					colorFormat={colorFormat}

@@ -72,10 +72,10 @@ export default function Tags({
 					toggleTag={toggleTag}
 				/>
 			</div>
-			<div className="flex w-full flex-wrap gap-1 lg:flex-nowrap">
+			<div className="hidden w-full flex-wrap gap-1 lg:flex lg:flex-nowrap">
 				{displayLayout === "live" && (
 					<ColorTags
-						className="hidden flex-1 lg:flex"
+						className="flex flex-1"
 						selectedTags={selectedTags}
 						tagCounts={tagCounts}
 						tags={colorGroupTags}
