@@ -38,31 +38,6 @@ export default function Tools({
 }) {
 	return (
 		<div className="flex w-full flex-wrap gap-1">
-			{favorites.size > 0 && (
-				<Button
-					onClick={() => {
-						setFavorites(new Set());
-						setShowFavorites(false);
-					}}
-					variant={"outline"}
-				>
-					clear favorites
-				</Button>
-			)}
-			{(selectedTags.length > 0 || showFavorites) && (
-				<Button
-					onClick={() => {
-						setSelectedTags([]);
-						setShowFavorites(false);
-					}}
-					variant={"outline"}
-					disabled={!(selectedTags.length > 0 || showFavorites)}
-					role="clear tags"
-				>
-					<X className="size-3" />
-					<span>clear tag{selectedTags.length > 1 && "s"}</span>
-				</Button>
-			)}
 			<ToggleGroup
 				type="single"
 				value={displayLayout}
@@ -85,19 +60,44 @@ export default function Tools({
 				<ToggleGroupItem value="hsl">hsl</ToggleGroupItem>
 			</ToggleGroup>
 			<ToggleGroup
+				className="hidden lg:flex"
 				type="multiple"
 				value={displayItems}
 				onValueChange={(newDisplayItems: DisplayItem[]) =>
 					newDisplayItems && setDisplayItems(newDisplayItems)
 				}
 			>
-				<ToggleGroupItem value="color-names" className="hidden lg:flex">
-					names
-				</ToggleGroupItem>
+				<ToggleGroupItem value="color-names">names</ToggleGroupItem>
 			</ToggleGroup>
 			<Button onClick={handleExport} variant={"outline"}>
 				export
 			</Button>
+			{favorites.size > 0 && (
+				<Button
+					onClick={() => {
+						setFavorites(new Set());
+						setShowFavorites(false);
+					}}
+					variant={"outline"}
+				>
+					<X className="size-3" />
+					<span>clear favorites</span>
+				</Button>
+			)}
+			{(selectedTags.length > 0 || showFavorites) && (
+				<Button
+					onClick={() => {
+						setSelectedTags([]);
+						setShowFavorites(false);
+					}}
+					variant={"outline"}
+					disabled={!(selectedTags.length > 0 || showFavorites)}
+					role="clear tags"
+				>
+					<X className="size-3" />
+					<span>clear tag{selectedTags.length > 1 && "s"}</span>
+				</Button>
+			)}
 		</div>
 	);
 }
