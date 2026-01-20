@@ -3,7 +3,7 @@
 import { Heart } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import ColorChip from "@/components/ColorChip";
+import ColorChip, { ColorChipHideOptions } from "@/components/ColorChip";
 import ColorPicker from "@/components/ColorPicker";
 import Tags from "@/components/Tags";
 import Tools from "@/components/Tools";
@@ -297,6 +297,7 @@ export function Swatch() {
 					</div>
 					<div className="flex flex-col gap-1">
 						{favoriteColors.map((color) => {
+							const hide: ColorChipHideOptions[] = ["tags"];
 							const stableId = getLiveId(color);
 							const existsInCurrentLayout = !!color.layout[state.layout];
 							const matchesActiveFilters =
@@ -310,7 +311,7 @@ export function Swatch() {
 									color={color}
 									existsInLayout={isEffectivelyVisible}
 									format={state.format}
-									hide={["tags"]}
+									hide={hide}
 									toggleTag={toggleTag}
 								/>
 							);
