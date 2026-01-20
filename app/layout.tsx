@@ -28,7 +28,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className="light" style={{ colorScheme: "light" }}>
+		<html
+			lang="en"
+			className="light"
+			style={{ colorScheme: "light" }}
+			suppressHydrationWarning
+		>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} mx-auto max-w-7xl px-1 antialiased md:px-2 lg:px-4`}
 			>
