@@ -100,6 +100,10 @@ export default function ColorPicker({
 								<Tooltip key={colorKey}>
 									<TooltipTrigger asChild>
 										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												setSelectedColor(color);
+											}}
 											onDoubleClick={(e) => {
 												e.preventDefault();
 												toggleFavorite(color);
@@ -117,6 +121,7 @@ export default function ColorPicker({
 											<div
 												onClick={(e) => {
 													e.stopPropagation();
+													setSelectedColor(color);
 													toggleFavorite(color);
 												}}
 											>
