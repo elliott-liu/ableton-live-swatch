@@ -1,4 +1,5 @@
 import { EyeOff } from "lucide-react";
+import { CSSProperties } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ColorData } from "@/data/colors";
@@ -23,7 +24,7 @@ export default function ColorChip({
 }) {
 	const displayColorCode = !hide?.includes("colorCode");
 	const displayTags = !hide?.includes("tags");
-
+	const contrastColor = getContrastColor(color.hex);
 	const isHidden = existsInLayout === false;
 
 	return (
@@ -32,9 +33,7 @@ export default function ColorChip({
 				"group relative flex w-full items-center transition-colors duration-150",
 				isHidden ? "bg-muted/50 grayscale hover:grayscale-0" : "",
 			)}
-			style={{
-				backgroundColor: !isHidden ? color.hex : undefined,
-			}}
+			style={{ backgroundColor: !isHidden ? color.hex : undefined }}
 		>
 			{isHidden && (
 				<div
@@ -45,32 +44,14 @@ export default function ColorChip({
 
 			<div
 				className="relative z-10 flex-1 p-3"
-				style={{
-					color: !isHidden ? getContrastColor(color.hex) : undefined,
-				}}
+				style={{ color: isHidden ? undefined : contrastColor }}
 			>
 				<div
-					className="transition-colors"
-					style={{
-						color: isHidden ? undefined : "inherit",
-					}}
-					ref={(el) => {
-						if (el && isHidden) {
-							el.style.setProperty("color", "inherit");
-							el.parentElement?.parentElement?.addEventListener(
-								"mouseenter",
-								() => {
-									el.style.color = getContrastColor(color.hex);
-								},
-							);
-							el.parentElement?.parentElement?.addEventListener(
-								"mouseleave",
-								() => {
-									el.style.color = "";
-								},
-							);
-						}
-					}}
+					className={cn(
+						"transition-colors",
+						isHidden && "group-hover:text-(--hover-color)!",
+					)}
+					style={{ "--hover-color": contrastColor } as CSSProperties}
 				>
 					<p className="font-semibold">{color.name}</p>
 					{displayColorCode && (
@@ -87,10 +68,7 @@ export default function ColorChip({
 									e.stopPropagation();
 									toggleTag(tag);
 								}}
-								style={{
-									backgroundColor: getContrastColor(color.hex),
-									color: color.hex,
-								}}
+								style={{ backgroundColor: contrastColor, color: color.hex }}
 								className={cn(
 									isHidden &&
 										"opacity-0 transition-opacity group-hover:opacity-100",
@@ -105,29 +83,12 @@ export default function ColorChip({
 					</div>
 				)}
 			</div>
+
 			{isHidden && (
 				<div className="relative z-10 pr-4">
 					<EyeOff
-						className="size-4 opacity-40 transition-all group-hover:opacity-100"
-						style={{
-							color: "currentColor",
-						}}
-						ref={(el) => {
-							if (el) {
-								el.parentElement?.parentElement?.addEventListener(
-									"mouseenter",
-									() => {
-										el.style.color = getContrastColor(color.hex);
-									},
-								);
-								el.parentElement?.parentElement?.addEventListener(
-									"mouseleave",
-									() => {
-										el.style.color = "currentColor";
-									},
-								);
-							}
-						}}
+						className="size-4 opacity-40 transition-all group-hover:text-(--hover-color)! group-hover:opacity-100"
+						style={{ "--hover-color": contrastColor } as CSSProperties}
 					/>
 				</div>
 			)}
