@@ -1,5 +1,5 @@
 import { EyeOff } from "lucide-react";
-import { CSSProperties } from "react";
+import { CSSProperties, memo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ColorData } from "@/data/colors";
@@ -9,7 +9,9 @@ import { getContrastColor } from "@/utilities/getContrastColor";
 
 export type ColorChipHideOptions = "colorCode" | "tags";
 
-export default function ColorChip({
+export default memo(ColorChipBase);
+
+function ColorChipBase({
 	color,
 	existsInLayout,
 	format,
@@ -63,7 +65,7 @@ export default function ColorChip({
 					<div className="mt-1.5 flex flex-wrap gap-1">
 						{color.tags.map((tag) => (
 							<Button
-								key={tag}
+								key={`color-chip-tag-${tag}`}
 								onClick={(e) => {
 									e.stopPropagation();
 									toggleTag(tag);

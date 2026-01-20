@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { useMemo } from "react";
 
 import { ColorButton } from "@/components/ColorButton";
 import { DisplayItem, getLiveId } from "@/components/Swatch";
@@ -24,7 +24,7 @@ export default function ColorPicker({
 	filteredColors,
 	handleCopy,
 	selectedColor,
-	setSelectedColor,
+	onSelect,
 	toggleFavorite,
 	toggleTag,
 }: {
@@ -37,7 +37,7 @@ export default function ColorPicker({
 	filteredColors: ColorData[];
 	handleCopy: (color: ColorData) => Promise<void>;
 	selectedColor: ColorData | null;
-	setSelectedColor: Dispatch<SetStateAction<ColorData | null>>;
+	onSelect: (color: ColorData) => void;
 	toggleFavorite: (color: ColorData) => void;
 	toggleTag: (tag: ColorTag) => void;
 }) {
@@ -79,13 +79,13 @@ export default function ColorPicker({
 				)}
 			>
 				{grid.map((row, rowIndex) => (
-					<div key={rowIndex} className="flex gap-1">
+					<div key={`grid-row-${rowIndex}`} className="flex gap-1">
 						{row.map((color, colIndex) => {
 							if (!color) {
 								return (
 									<div
 										className="box-border aspect-square h-full w-full border border-dashed border-border"
-										key={`empty-${rowIndex}-${colIndex}`}
+										key={`grid-empty-${rowIndex}-${colIndex}`}
 									/>
 								);
 							}
@@ -94,7 +94,7 @@ export default function ColorPicker({
 							const isFavorite = favorites.has(stableId);
 
 							return (
-								<Tooltip key={stableId}>
+								<Tooltip key={`grid-color-${stableId}`}>
 									<TooltipTrigger asChild>
 										<ColorButton
 											color={color}
@@ -102,8 +102,8 @@ export default function ColorPicker({
 											displayItems={displayItems}
 											handleCopy={handleCopy}
 											isFavorite={isFavorite}
-											selectedColor={selectedColor}
-											setSelectedColor={setSelectedColor}
+											isSelected={selectedColor?.hex === color.hex}
+											onSelect={onSelect}
 											stableId={stableId}
 											toggleFavorite={toggleFavorite}
 										/>
@@ -129,7 +129,7 @@ export default function ColorPicker({
 										<div className="mt-1.5 flex flex-wrap gap-1">
 											{color.tags.map((tag) => (
 												<Button
-													key={tag}
+													key={`grid-color-tag-${tag}`}
 													color="default"
 													border="none"
 													className="z-10"

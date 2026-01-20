@@ -49,7 +49,7 @@ export default function Tags({
 					const isDisabled = count === 0;
 					return (
 						<Toggle
-							key={tag}
+							key={`tag-${tag}`}
 							color="default"
 							border="outline"
 							disabled={isDisabled}
@@ -106,7 +106,7 @@ function ColorTags({
 				const isDisabled = count === 0;
 				return (
 					<Toggle
-						key={colIndex}
+						key={`tag-${tag}-${colIndex}`}
 						disabled={isDisabled}
 						color="default"
 						border="outline"

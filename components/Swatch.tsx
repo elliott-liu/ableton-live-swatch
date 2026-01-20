@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import ColorChip from "@/components/ColorChip";
 import ColorPicker from "@/components/ColorPicker";
@@ -37,38 +37,40 @@ export const getLiveId = (color: ColorData): ColorCoordinateId => {
 export function Swatch() {
 	const [state, updateState] = useUrlState(DEFAULT_STATE);
 
-	const setFormat = (format: ColorFormat) => updateState({ format });
-	const setLayout = (layout: DisplayLayout) => updateState({ layout });
-	const setSelectedTags = (tags: ColorTag[]) => updateState({ tags });
-	const setDisplayItems = (display: DisplayItem[]) => updateState({ display });
-	const setFavorites = (favorites: ColorCoordinateId[]) =>
-		updateState({ favorites });
+	const allTags = useMemo(
+		() => Array.from(new Set(colors.flatMap((c) => c.tags))).sort(),
+		[],
+	);
 
-	const toggleTag = (itemOrItems: ColorTag | ColorTag[]) => {
-		let newTags = [...state.tags];
-		const itemsToToggle = Array.isArray(itemOrItems)
-			? itemOrItems
-			: [itemOrItems];
-
-		itemsToToggle.forEach((item) => {
-			if (newTags.includes(item)) {
-				newTags = newTags.filter((i) => i !== item);
-			} else {
-				if (typeof item === "string" && item.startsWith("cg:")) {
-					newTags = newTags.filter((t) => !t.startsWith("cg:"));
-				}
-				newTags.push(item);
-			}
-		});
-
-		setSelectedTags(newTags);
-	};
+	const setFormat = useCallback(
+		(format: ColorFormat) => updateState({ format }),
+		[updateState],
+	);
+	const setLayout = useCallback(
+		(layout: DisplayLayout) => updateState({ layout }),
+		[updateState],
+	);
+	const setSelectedTags = useCallback(
+		(tags: ColorTag[]) => updateState({ tags }),
+		[updateState],
+	);
+	const setDisplayItems = useCallback(
+		(display: DisplayItem[]) => updateState({ display }),
+		[updateState],
+	);
+	const setFavorites = useCallback(
+		(favorites: ColorCoordinateId[]) => updateState({ favorites }),
+		[updateState],
+	);
 
 	const [copiedColorKey, setCopiedColorKey] =
 		useState<ColorCoordinateId | null>(null);
 	const [selectedColor, setSelectedColor] = useState<ColorData | null>(null);
 
-	const favorites = useMemo(() => new Set(state.favorites), [state.favorites]);
+	const favoritesSet = useMemo(
+		() => new Set(state.favorites),
+		[state.favorites],
+	);
 
 	const filteredColors = useMemo(() => {
 		const onlyShowFavorites = state.tags.includes("favorite");
@@ -81,137 +83,94 @@ export function Swatch() {
 			if (!layoutData) return false;
 
 			const stableId = getLiveId(color);
-			const matchesFavorites = !onlyShowFavorites || favorites.has(stableId);
+			const matchesFavorites = !onlyShowFavorites || favoritesSet.has(stableId);
 			const matchesTags = metadataTags.every((tag) => color.tags.includes(tag));
 
 			return matchesFavorites && matchesTags;
 		});
-	}, [colors, state.tags, state.layout, favorites]);
+	}, [state.tags, state.layout, favoritesSet]);
 
 	const filteredColorKeys = useMemo(() => {
 		if (!state.tags.includes("favorite") && state.tags.length === 0)
 			return null;
-
-		return new Set(
-			filteredColors
-				.map((c) => c.layout[state.layout])
-				.filter(Boolean)
-				.map((layoutData) => {
-					if (!layoutData) {
-						console.warn(
-							"Attempted to filter a color without layout data for the current display layout.",
-						);
-						return;
-					}
-
-					const key: ColorCoordinateId = `${layoutData.col}-${layoutData.row}`;
-					return key;
-				}),
-		);
-	}, [filteredColors, state.layout, state.tags]);
-
-	useEffect(() => {
-		if (selectedColor) {
-			const selectedLayoutData = selectedColor.layout[state.layout];
-			if (selectedLayoutData) {
-				const selectedColorKey: ColorCoordinateId = `${selectedLayoutData.col}-${selectedLayoutData.row}`;
-				if (filteredColorKeys && !filteredColorKeys.has(selectedColorKey)) {
-					setSelectedColor(null);
-				}
-			} else {
-				setSelectedColor(null);
-			}
-		}
-
-		if (filteredColors.length === 1) {
-			const onlyColor = filteredColors[0];
-			if (selectedColor?.hex !== onlyColor.hex) {
-				setSelectedColor(onlyColor);
-			}
-		}
-	}, [selectedColor, filteredColorKeys, filteredColors, state.layout]);
+		return new Set(filteredColors.map((c) => getLiveId(c)));
+	}, [filteredColors, state.tags]);
 
 	const favoritesCount = useMemo(() => {
 		const metadataTags = state.tags.filter((t) => t !== "favorite");
-
 		return colors.filter((color) => {
-			const isFavorite = favorites.has(getLiveId(color));
+			const isFavorite = favoritesSet.has(getLiveId(color));
 			const existsInCurrentLayout = !!color.layout[state.layout];
 			const matchesTags = metadataTags.every((tag) => color.tags.includes(tag));
 			return existsInCurrentLayout && isFavorite && matchesTags;
 		}).length;
-	}, [favorites, state.tags, state.layout]);
+	}, [favoritesSet, state.tags, state.layout]);
 
 	const favoriteColors = useMemo(() => {
-		return colors.filter((color) => {
-			const isFavorite = favorites.has(getLiveId(color));
-			return isFavorite;
-		});
-	}, [favorites, state.layout]);
-
-	useEffect(() => {
-		if (favoritesCount === 0 && state.tags.includes("favorite")) {
-			toggleTag("favorite");
-		}
-	}, [favoritesCount, state.tags, updateState]);
-
-	const handleCopy = async (color: ColorData) => {
-		const value = formatColor(color, state.format);
-		await navigator.clipboard.writeText(value);
-
-		const layoutData = color.layout[state.layout];
-		if (layoutData) {
-			const key: ColorCoordinateId = `${layoutData.col}-${layoutData.row}`;
-			setCopiedColorKey(key);
-			setTimeout(() => setCopiedColorKey(null), 1500);
-		} else {
-			console.warn(
-				"Attempted to copy a color without layout data for the current display layout.",
-			);
-			setCopiedColorKey(null);
-		}
-	};
-
-	const toggleFavorite = (color: ColorData) => {
-		const key: ColorCoordinateId = getLiveId(color);
-		const isFavorite = state.favorites.includes(key);
-		const nextFavorites = isFavorite
-			? state.favorites.filter((id) => id !== key)
-			: [...state.favorites, key];
-		setFavorites(nextFavorites);
-	};
-
-	const tags = Array.from(new Set(colors.flatMap((c) => c.tags))).sort();
+		return colors.filter((color) => favoritesSet.has(getLiveId(color)));
+	}, [favoritesSet]);
 
 	const tagCounts = useMemo(() => {
-		const counts: Record<ColorTag, number> = {};
+		const counts: Record<string, number> = {};
+		const isFilteringFavorite = state.tags.includes("favorite");
 
-		for (const tag of tags) {
+		for (const tag of allTags) {
 			const metadataTagsToCheck = state.tags.includes(tag)
 				? state.tags.filter((t) => t !== "favorite")
 				: [...state.tags.filter((t) => t !== "favorite"), tag];
 
-			const isFilteringFavorite = state.tags.includes("favorite");
-
-			const matchingColors = colors.filter((color) => {
+			counts[tag] = colors.filter((color) => {
 				if (!color.layout[state.layout]) return false;
-
 				const stableId = getLiveId(color);
-				const matchesFavorite = !isFilteringFavorite || favorites.has(stableId);
-
+				const matchesFavorite =
+					!isFilteringFavorite || favoritesSet.has(stableId);
 				const matchesMetadata = metadataTagsToCheck.every((t) =>
 					color.tags.includes(t),
 				);
-
 				return matchesFavorite && matchesMetadata;
-			});
-			counts[tag] = matchingColors.length;
+			}).length;
 		}
-
 		return counts;
-	}, [state.tags, favorites, state.layout]);
+	}, [allTags, state.tags, favoritesSet, state.layout]);
 
-	const handleExport = () => {
+	const toggleTag = useCallback(
+		(itemOrItems: ColorTag | ColorTag[]) => {
+			let newTags = [...state.tags];
+			const itemsToToggle = Array.isArray(itemOrItems)
+				? itemOrItems
+				: [itemOrItems];
+
+			itemsToToggle.forEach((item) => {
+				if (newTags.includes(item)) {
+					newTags = newTags.filter((i) => i !== item);
+				} else {
+					if (typeof item === "string" && item.startsWith("cg:")) {
+						newTags = newTags.filter((t) => !t.startsWith("cg:"));
+					}
+					newTags.push(item);
+				}
+			});
+			updateState({ tags: newTags });
+		},
+		[state.tags, updateState],
+	);
+
+	const handleCopy = useCallback(
+		async (color: ColorData) => {
+			const value = formatColor(color, state.format);
+			await navigator.clipboard.writeText(value);
+
+			const layoutData = color.layout[state.layout];
+			if (layoutData) {
+				const key: ColorCoordinateId = `${layoutData.col}-${layoutData.row}`;
+				setCopiedColorKey(key);
+				setTimeout(() => setCopiedColorKey(null), 1500);
+			}
+		},
+		[state.format, state.layout],
+	);
+
+	const handleExport = useCallback(() => {
 		const colorsToExport = filteredColors;
 
 		const exportData = {
@@ -219,17 +178,13 @@ export function Swatch() {
 			selectedTags: state.tags.length > 0 ? state.tags : undefined,
 			showFavoritesOnly: state.tags.includes("favorite") || undefined,
 			colors: colorsToExport.map((c) => {
-				const layoutData = c.layout[state.layout];
-
-				const favoriteKey: ColorCoordinateId | null = layoutData
-					? `${layoutData.col}-${layoutData.row}`
-					: null;
+				const stableId = getLiveId(c);
 
 				return {
 					name: c.name,
 					value: formatColor(c, state.format),
 					tags: c.tags,
-					isFavorite: (favoriteKey && favorites.has(favoriteKey)) || undefined,
+					isFavorite: favoritesSet.has(stableId) || undefined,
 				};
 			}),
 		};
@@ -243,7 +198,49 @@ export function Swatch() {
 		a.download = `ableton-colors-${state.format}-${state.layout}.json`;
 		a.click();
 		URL.revokeObjectURL(url);
-	};
+	}, [filteredColors, state.format, state.layout, state.tags, favoritesSet]);
+
+	const toggleFavorite = useCallback(
+		(color: ColorData) => {
+			const key = getLiveId(color);
+			const nextFavorites = state.favorites.includes(key)
+				? state.favorites.filter((id) => id !== key)
+				: [...state.favorites, key];
+			updateState({ favorites: nextFavorites });
+		},
+		[state.favorites, updateState],
+	);
+
+	const handleSelect = useCallback((color: ColorData) => {
+		setSelectedColor((prev) => (prev?.hex === color.hex ? prev : color));
+	}, []);
+
+	useEffect(() => {
+		if (filteredColors.length === 1) {
+			const onlyColor = filteredColors[0];
+			if (selectedColor?.hex !== onlyColor.hex) {
+				setSelectedColor(onlyColor);
+			}
+			return;
+		}
+
+		if (selectedColor) {
+			const stableId = getLiveId(selectedColor);
+			const existsInLayout = !!selectedColor.layout[state.layout];
+			const isFilteredOut =
+				filteredColorKeys !== null && !filteredColorKeys.has(stableId);
+
+			if (!existsInLayout || isFilteredOut) {
+				setSelectedColor(null);
+			}
+		}
+	}, [filteredColorKeys, filteredColors, state.layout, selectedColor?.hex]);
+
+	useEffect(() => {
+		if (favoritesCount === 0 && state.tags.includes("favorite")) {
+			toggleTag("favorite");
+		}
+	}, [favoritesCount, state.tags, toggleTag]);
 
 	return (
 		<div className="flex flex-col gap-1 md:gap-2 lg:gap-4">
@@ -252,7 +249,7 @@ export function Swatch() {
 					colorFormat={state.format}
 					displayItems={state.display}
 					displayLayout={state.layout}
-					favorites={favorites}
+					favorites={favoritesSet}
 					handleExport={handleExport}
 					selectedTags={state.tags}
 					setColorFormat={setFormat}
@@ -267,7 +264,7 @@ export function Swatch() {
 					favoritesCount={favoritesCount}
 					selectedTags={state.tags}
 					tagCounts={tagCounts}
-					tags={tags}
+					tags={allTags}
 					toggleTag={toggleTag}
 				/>
 				<ColorPicker
@@ -276,11 +273,11 @@ export function Swatch() {
 					copiedColorKey={copiedColorKey}
 					displayItems={state.display}
 					displayLayout={state.layout}
-					favorites={favorites}
+					favorites={favoritesSet}
 					filteredColors={filteredColors}
 					handleCopy={handleCopy}
 					selectedColor={selectedColor}
-					setSelectedColor={setSelectedColor}
+					onSelect={handleSelect}
 					toggleFavorite={toggleFavorite}
 					toggleTag={toggleTag}
 				/>
@@ -309,7 +306,7 @@ export function Swatch() {
 
 							return (
 								<ColorChip
-									key={stableId}
+									key={`favourite-${stableId}`}
 									color={color}
 									existsInLayout={isEffectivelyVisible}
 									format={state.format}

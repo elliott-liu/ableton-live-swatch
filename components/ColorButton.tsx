@@ -1,5 +1,5 @@
 import { Check, Copy, Heart } from "lucide-react";
-import { Dispatch, SetStateAction, forwardRef, memo } from "react";
+import { forwardRef, memo } from "react";
 
 import { ColorCoordinateId, DisplayItem } from "@/components/Swatch";
 import { ColorData } from "@/data/colors";
@@ -14,8 +14,8 @@ const ColorButtonBase = forwardRef<
 		displayItems: DisplayItem[];
 		handleCopy: (color: ColorData) => Promise<void>;
 		isFavorite: boolean;
-		selectedColor: ColorData | null;
-		setSelectedColor: Dispatch<SetStateAction<ColorData | null>>;
+		isSelected: boolean;
+		onSelect: (color: ColorData) => void;
 		stableId: ColorCoordinateId;
 		toggleFavorite: (color: ColorData) => void;
 	}
@@ -27,8 +27,8 @@ const ColorButtonBase = forwardRef<
 			displayItems,
 			handleCopy,
 			isFavorite,
-			selectedColor,
-			setSelectedColor,
+			isSelected,
+			onSelect,
 			stableId,
 			toggleFavorite,
 			...props
@@ -41,7 +41,7 @@ const ColorButtonBase = forwardRef<
 				{...props}
 				onClick={(e) => {
 					e.stopPropagation();
-					setSelectedColor(color);
+					onSelect(color);
 				}}
 				onDoubleClick={(e) => {
 					e.preventDefault();
@@ -49,7 +49,7 @@ const ColorButtonBase = forwardRef<
 				}}
 				className={cn(
 					"group relative box-border flex aspect-square h-full w-full items-center justify-center border border-border transition-transform hover:z-10 hover:scale-110 focus:ring-2 focus:ring-ring focus:outline-none",
-					selectedColor?.hex === color.hex && "ring-2 ring-foreground",
+					isSelected && "ring-2 ring-foreground",
 				)}
 				style={{
 					backgroundColor: color.hex,
@@ -69,7 +69,7 @@ const ColorButtonBase = forwardRef<
 					className="hidden md:block"
 					onClick={(e) => {
 						e.stopPropagation();
-						setSelectedColor(color);
+						onSelect(color);
 						toggleFavorite(color);
 					}}
 				>
@@ -95,7 +95,7 @@ const ColorButtonBase = forwardRef<
 						<div
 							onClick={(e) => {
 								e.stopPropagation();
-								setSelectedColor(color);
+								onSelect(color);
 								handleCopy(color);
 							}}
 						>
