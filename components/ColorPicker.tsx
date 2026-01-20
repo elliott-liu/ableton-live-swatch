@@ -122,13 +122,12 @@ export default function ColorPicker({
 													className={cn(
 														"absolute top-1 left-1 size-3",
 														"transition-all duration-150 ease-in-out",
-														"text-dynamic-contrast",
 														isFavorited &&
 															"fill-current opacity-50 group-hover:opacity-50 hover:fill-transparent hover:opacity-70",
 														!isFavorited &&
 															"fill-transparent opacity-0 group-hover:opacity-50 hover:fill-current hover:opacity-70",
 													)}
-													style={{ color: color.hex }}
+													style={{ color: getContrastColor(color.hex) }}
 												/>
 											</div>
 											<div className="group">
@@ -136,12 +135,9 @@ export default function ColorPicker({
 													<Check
 														className={cn(
 															"absolute right-1 bottom-1 size-3",
-															"animate-in delay-1500 duration-150 fade-in-0 zoom-in-0",
-															"animate-out duration-150 fade-out-0 zoom-out-0",
-															"text-dynamic-contrast",
 															"opacity-70",
 														)}
-														style={{ color: color.hex }}
+														style={{ color: getContrastColor(color.hex) }}
 													/>
 												) : (
 													<div
@@ -154,12 +150,9 @@ export default function ColorPicker({
 														<Copy
 															className={cn(
 																"absolute right-1 bottom-1 size-3",
-																"animate-in duration-1000 zoom-in-0 hover:zoom-in-50",
-																// "animate-out fade-out-100 zoom-out-100 duration-1000",
-																"text-dynamic-contrast",
-																// "opacity-0 hover:opacity-70 group-hover:opacity-50",
+																"opacity-0 group-hover:opacity-50 hover:opacity-70",
 															)}
-															style={{ color: color.hex }}
+															style={{ color: getContrastColor(color.hex) }}
 														/>
 													</div>
 												)}
@@ -174,9 +167,8 @@ export default function ColorPicker({
 													{color.name.split(" ").map((l, i) => (
 														<span
 															key={`${color.name}-line-${i}-${l}`}
-															className={"text-dynamic-contrast"}
 															style={{
-																color: color.hex,
+																color: getContrastColor(color.hex),
 															}}
 														>
 															{l}

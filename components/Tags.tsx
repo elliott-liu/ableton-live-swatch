@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { ColorTag, DisplayLayout, colorGroupHexMap } from "@/data/colors";
 import { cn } from "@/lib/utils";
+import { getContrastColor } from "@/utilities/getContrastColor";
 
 export default function Tags({
 	displayLayout,
@@ -133,18 +134,17 @@ function ColorTags({
 						}}
 					>
 						<span
-							className={"text-dynamic-contrast"}
 							style={{
-								color: tagColor,
+								color: getContrastColor(tagColor),
 							}}
 						>
 							{tag.replace("cg:", "")}
 						</span>
 						{count > 0 && (
 							<span
-								className={"text-dynamic-contrast opacity-80"}
+								className={"opacity-70"}
 								style={{
-									color: tagColor,
+									color: getContrastColor(tagColor),
 								}}
 							>
 								· {count}
