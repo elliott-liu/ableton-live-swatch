@@ -1,9 +1,9 @@
-import { ColorPicker } from "@/components/ColourPicker";
+import { Swatch } from "@/components/Swatch";
 
 export default function Page() {
 	return (
-		<main className="min-h-screen px-4">
-			<ColorPicker />
+		<main>
+			<Swatch />
 		</main>
 	);
 }

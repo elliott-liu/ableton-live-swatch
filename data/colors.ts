@@ -22,15 +22,28 @@ type ColorGroupings = (typeof colorGroupings)[number];
 type ColorGroupTags = Prepend<ColorGroupings, "cg:">;
 type ColorGroupTag = ColorGroupTags[number];
 
-export function assertColorGroupTag(value: unknown): asserts value is ColorGroupTag {
+export function assertColorGroupTag(
+	value: unknown,
+): asserts value is ColorGroupTag {
 	const prefixedColorGroupings = colorGroupings.map((group) => `cg:${group}`);
 
-	if (typeof value !== "string" || !prefixedColorGroupings.includes(value as ColorGroupTag)) {
+	if (
+		typeof value !== "string" ||
+		!prefixedColorGroupings.includes(value as ColorGroupTag)
+	) {
 		throw new Error(`Value "${value}" is not a valid ColorGroupTag.`);
 	}
 }
 
-export type DefinedColorTag = "push" | "vibrant" | "muted" | "dark" | "pastel" | "warm" | "cool" | "neutral";
+export type DefinedColorTag =
+	| "push"
+	| "vibrant"
+	| "muted"
+	| "dark"
+	| "pastel"
+	| "warm"
+	| "cool"
+	| "neutral";
 export type ColorTag = ColorGroupTag | DefinedColorTag | (string & {});
 
 type Layout = { col: number; row: number };
@@ -653,11 +666,14 @@ export const colors: ColorData[] = [
 	},
 ];
 
-export const colorGroupHexMap = colors
+export const colorGroupHexMap: Record<ColorGroupTag, string> = colors
 	.filter((color) => color.layout.live.row === 2)
-	.reduce((acc, color) => {
-		const foundTag = color.tags.find((tag) => tag.startsWith("cg:"));
-		assertColorGroupTag(foundTag);
-		acc[foundTag] = color.hex;
-		return acc;
-	}, {} as Record<ColorGroupTag, string>);
+	.reduce(
+		(acc, color) => {
+			const foundTag = color.tags.find((tag) => tag.startsWith("cg:"));
+			assertColorGroupTag(foundTag);
+			acc[foundTag] = color.hex;
+			return acc;
+		},
+		{} as Record<ColorGroupTag, string>,
+	);
