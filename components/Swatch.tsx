@@ -8,9 +8,7 @@ import ColorPicker from "@/components/ColorPicker";
 import Tags from "@/components/Tags";
 import Tools from "@/components/Tools";
 import { ColorData, ColorTag, DisplayLayout, colors } from "@/data/colors";
-import { cn } from "@/lib/utils";
 import { ColorFormat, formatColor } from "@/utilities/formatColor";
-import { getContrastColor } from "@/utilities/getContrastColor";
 import { toggleArrayItem } from "@/utilities/toggleArrayItem";
 
 export type DisplayItem = "color-names";
@@ -261,7 +259,6 @@ export function Swatch() {
 					format={colorFormat}
 					color={selectedColor}
 					toggleTag={toggleTag}
-					hide={[]}
 				/>
 			)}
 			{favoriteColors.length > 0 && (
@@ -273,47 +270,16 @@ export function Swatch() {
 					<div className="flex flex-col gap-1">
 						{favoriteColors.map((color) => {
 							const layoutData = color.layout[displayLayout];
-							const colorKey = `${layoutData!.col}-${layoutData!.row}`;
+							const colorKey = `favourite-${layoutData!.col}-${layoutData!.row}`;
 
 							return (
-								<>
-									<ColorChip
-										key={colorKey}
-										format={colorFormat}
-										color={color}
-										toggleTag={toggleTag}
-										hide={["tags"]}
-									/>
-									<button
-										key={colorKey}
-										onClick={() => {
-											setSelectedColor(color);
-											handleCopy(color);
-										}}
-										className={cn(
-											"flex w-full items-center justify-between p-3 transition-opacity hover:opacity-90",
-											selectedColor?.hex === color.hex &&
-												"ring-2 ring-foreground",
-										)}
-										style={{
-											backgroundColor: color.hex,
-											color: getContrastColor(color.hex),
-										}}
-										aria-label={`Select ${color.name}`}
-									>
-										<div className="flex flex-col items-start">
-											<span className="font-semibold">{color.name}</span>
-											<span className="text-xs opacity-80">
-												{formatColor(color, colorFormat)}
-											</span>
-										</div>
-										{copiedColorKey === colorKey && (
-											<span className="animate-in text-[10px] font-medium fade-in-0 zoom-in-95">
-												copied!
-											</span>
-										)}
-									</button>
-								</>
+								<ColorChip
+									key={colorKey}
+									format={colorFormat}
+									color={color}
+									toggleTag={toggleTag}
+									hide={["tags"]}
+								/>
 							);
 						})}
 					</div>
