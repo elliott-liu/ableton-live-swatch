@@ -44,7 +44,11 @@ export type DefinedColorTag =
 	| "warm"
 	| "cool"
 	| "neutral";
-export type ColorTag = ColorGroupTag | DefinedColorTag | (string & {});
+export type ColorTag =
+	| ColorGroupTag
+	| DefinedColorTag
+	| "favorite"
+	| (string & {});
 
 type Layout = { col: number; row: number };
 

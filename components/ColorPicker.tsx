@@ -1,7 +1,7 @@
 import { Check, Copy, Heart } from "lucide-react";
 import { Dispatch, SetStateAction, useMemo } from "react";
 
-import { DisplayItem } from "@/components/Swatch";
+import { DisplayItem, getLiveId } from "@/components/Swatch";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -90,14 +90,13 @@ export default function ColorPicker({
 								);
 							}
 
-							const currentLayoutData = color.layout[displayLayout];
-							const colorKey = currentLayoutData
-								? `${currentLayoutData.col}-${currentLayoutData.row}`
-								: `${color.hex}-no-layout`;
-							const isFavorited = favorites.has(colorKey);
+							const stableId = getLiveId(color);
+							const isFavorite = favorites.has(stableId);
+							const layoutData = color.layout[displayLayout]!;
+							const displayKey = `${layoutData.col}-${layoutData.row}`;
 
 							return (
-								<Tooltip key={colorKey}>
+								<Tooltip key={stableId}>
 									<TooltipTrigger asChild>
 										<button
 											onClick={(e) => {
@@ -118,6 +117,16 @@ export default function ColorPicker({
 											}}
 											aria-label={`Select ${color.name}`}
 										>
+											<Heart
+												className={cn(
+													"size-3 md:hidden",
+													"transition-all duration-150 ease-in-out",
+													isFavorite &&
+														"fill-current opacity-50 group-hover:opacity-50",
+													!isFavorite && "fill-transparent opacity-0",
+												)}
+												style={{ color: getContrastColor(color.hex) }}
+											/>
 											<div
 												className="hidden md:block"
 												onClick={(e) => {
@@ -130,16 +139,16 @@ export default function ColorPicker({
 													className={cn(
 														"absolute top-1 left-1 size-3",
 														"transition-all duration-150 ease-in-out",
-														isFavorited &&
+														isFavorite &&
 															"fill-current opacity-50 group-hover:opacity-50 hover:fill-transparent hover:opacity-70",
-														!isFavorited &&
+														!isFavorite &&
 															"fill-transparent opacity-0 group-hover:opacity-50 hover:fill-current hover:opacity-70",
 													)}
 													style={{ color: getContrastColor(color.hex) }}
 												/>
 											</div>
 											<div className="group hidden md:block">
-												{copiedColorKey === colorKey ? (
+												{copiedColorKey === displayKey ? (
 													<Check
 														className={cn(
 															"absolute right-1 bottom-1 size-3",
@@ -165,7 +174,7 @@ export default function ColorPicker({
 													</div>
 												)}
 											</div>
-											{displayItems.includes("color-names") && (
+											{displayItems.includes("names") && (
 												<div
 													className={cn(
 														"flex-col text-xs lowercase",
@@ -188,7 +197,10 @@ export default function ColorPicker({
 									</TooltipTrigger>
 									<TooltipContent
 										side="top"
-										className="rounded-none border-none px-3 py-2 text-sm font-medium"
+										className={cn(
+											"rounded-none border-none px-3 py-2 text-sm font-medium",
+											"after:absolute after:top-full after:left-0 after:h-2.5 after:w-full after:content-['']",
+										)}
 										style={{
 											backgroundColor: color.hex,
 											color: getContrastColor(color.hex),

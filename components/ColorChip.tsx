@@ -1,48 +1,100 @@
+import { EyeOff } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { ColorData } from "@/data/colors";
+import { cn } from "@/lib/utils";
 import { ColorFormat, formatColor } from "@/utilities/formatColor";
 import { getContrastColor } from "@/utilities/getContrastColor";
 
 export type ColorChipHideOptions = "colorCode" | "tags";
+
 export default function ColorChip({
+	color,
+	existsInLayout,
 	format,
-	color: selectedColor,
-	toggleTag,
 	hide,
+	toggleTag,
 }: {
-	format: ColorFormat;
 	color: ColorData;
-	toggleTag: (tag: string) => void;
+	existsInLayout?: boolean | null;
+	format: ColorFormat;
 	hide?: ColorChipHideOptions[];
+	toggleTag: (tag: string) => void;
 }) {
 	const displayColorCode = !hide?.includes("colorCode");
 	const displayTags = !hide?.includes("tags");
 
+	const isHidden = existsInLayout === false;
+
 	return (
 		<div
-			className="flex w-full items-center"
-			style={{ backgroundColor: selectedColor.hex }}
+			className={cn(
+				"group relative flex w-full items-center transition-colors duration-150",
+				isHidden ? "bg-muted/50 grayscale hover:grayscale-0" : "",
+			)}
+			style={{
+				backgroundColor: !isHidden ? color.hex : undefined,
+			}}
 		>
+			{isHidden && (
+				<div
+					className="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
+					style={{ backgroundColor: color.hex }}
+				/>
+			)}
+
 			<div
-				className="flex-1 p-3"
-				style={{ color: getContrastColor(selectedColor.hex) }}
+				className="relative z-10 flex-1 p-3"
+				style={{
+					color: !isHidden ? getContrastColor(color.hex) : undefined,
+				}}
 			>
-				<p className="font-semibold">{selectedColor.name}</p>
-				{displayColorCode && (
-					<p className="text-sm opacity-80">
-						{formatColor(selectedColor, format)}
-					</p>
-				)}
+				<div
+					className="transition-colors"
+					style={{
+						color: isHidden ? undefined : "inherit",
+					}}
+					ref={(el) => {
+						if (el && isHidden) {
+							el.style.setProperty("color", "inherit");
+							el.parentElement?.parentElement?.addEventListener(
+								"mouseenter",
+								() => {
+									el.style.color = getContrastColor(color.hex);
+								},
+							);
+							el.parentElement?.parentElement?.addEventListener(
+								"mouseleave",
+								() => {
+									el.style.color = "";
+								},
+							);
+						}
+					}}
+				>
+					<p className="font-semibold">{color.name}</p>
+					{displayColorCode && (
+						<p className="text-sm opacity-80">{formatColor(color, format)}</p>
+					)}
+				</div>
+
 				{displayTags && (
 					<div className="mt-1.5 flex flex-wrap gap-1">
-						{selectedColor.tags.map((tag) => (
+						{color.tags.map((tag) => (
 							<Button
 								key={tag}
-								onClick={() => toggleTag(tag)}
-								style={{
-									backgroundColor: getContrastColor(selectedColor.hex),
-									color: selectedColor.hex,
+								onClick={(e) => {
+									e.stopPropagation();
+									toggleTag(tag);
 								}}
+								style={{
+									backgroundColor: getContrastColor(color.hex),
+									color: color.hex,
+								}}
+								className={cn(
+									isHidden &&
+										"opacity-0 transition-opacity group-hover:opacity-100",
+								)}
 								color="default"
 								border="none"
 								size="sm"
@@ -53,6 +105,32 @@ export default function ColorChip({
 					</div>
 				)}
 			</div>
+			{isHidden && (
+				<div className="relative z-10 pr-4">
+					<EyeOff
+						className="size-4 opacity-40 transition-all group-hover:opacity-100"
+						style={{
+							color: "currentColor",
+						}}
+						ref={(el) => {
+							if (el) {
+								el.parentElement?.parentElement?.addEventListener(
+									"mouseenter",
+									() => {
+										el.style.color = getContrastColor(color.hex);
+									},
+								);
+								el.parentElement?.parentElement?.addEventListener(
+									"mouseleave",
+									() => {
+										el.style.color = "currentColor";
+									},
+								);
+							}
+						}}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -1,5 +1,4 @@
 import { Heart } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
 
 import { Toggle } from "@/components/ui/toggle";
 import { ColorTag, DisplayLayout, colorGroupHexMap } from "@/data/colors";
@@ -10,8 +9,6 @@ export default function Tags({
 	displayLayout,
 	favoritesCount,
 	selectedTags,
-	setShowFavorites,
-	showFavorites,
 	tagCounts,
 	tags,
 	toggleTag,
@@ -19,14 +16,14 @@ export default function Tags({
 	displayLayout: DisplayLayout;
 	favoritesCount: number;
 	selectedTags: ColorTag[];
-	setShowFavorites: Dispatch<SetStateAction<boolean>>;
-	showFavorites: boolean;
 	tagCounts: Record<ColorTag, number>;
 	tags: ColorTag[];
 	toggleTag: (tag: ColorTag) => void;
 }) {
 	const colorGroupTags = tags.filter((tag) => tag.startsWith("cg:"));
 	const nonColorGroupTags = tags.filter((tag) => !tag.startsWith("cg:"));
+
+	const showFavorites = selectedTags.includes("favorite");
 
 	return (
 		<div className="flex w-full flex-row flex-wrap gap-1">
@@ -36,8 +33,8 @@ export default function Tags({
 					border="outline"
 					disabled={favoritesCount === 0 && !showFavorites}
 					pressed={showFavorites}
-					onPressedChange={(pressed) => setShowFavorites(pressed)}
-					role="favourites"
+					onPressedChange={() => toggleTag("favorite")}
+					role="favorites"
 				>
 					<Heart
 						className="size-3"
@@ -66,8 +63,9 @@ export default function Tags({
 						</Toggle>
 					);
 				})}
+				<div className="w-full sm:hidden" />
 				<ColorTags
-					className={cn(displayLayout === "live" ? "relative lg:hidden" : "")}
+					className={cn(displayLayout === "live" ? "flex lg:hidden" : "")}
 					selectedTags={selectedTags}
 					tagCounts={tagCounts}
 					tags={colorGroupTags}
@@ -99,7 +97,7 @@ function ColorTags({
 	selectedTags: string[];
 	tagCounts: Record<string, number>;
 	tags: ColorTag[];
-	toggleTag: (tag: string) => void;
+	toggleTag: (tag: ColorTag) => void;
 }) {
 	return (
 		<>

@@ -1,6 +1,7 @@
 import { AlertTriangle, X } from "lucide-react";
 
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { ColorCoordinateId, DisplayItem } from "@/components/Swatch";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ColorTag, DisplayLayout } from "@/data/colors";
@@ -18,8 +19,6 @@ export default function Tools({
 	setDisplayLayout,
 	setFavorites,
 	setSelectedTags,
-	setShowFavorites,
-	showFavorites,
 }: {
 	colorFormat: ColorFormat;
 	displayItems: DisplayItem[];
@@ -27,14 +26,15 @@ export default function Tools({
 	favorites: Set<string>;
 	handleExport: () => void;
 	selectedTags: ColorTag[];
-	setColorFormat: Dispatch<SetStateAction<ColorFormat>>;
-	setDisplayItems: Dispatch<SetStateAction<DisplayItem[]>>;
-	setDisplayLayout: Dispatch<SetStateAction<DisplayLayout>>;
-	setFavorites: Dispatch<SetStateAction<Set<string>>>;
-	setSelectedTags: Dispatch<SetStateAction<ColorTag[]>>;
-	setShowFavorites: Dispatch<SetStateAction<boolean>>;
-	showFavorites: boolean;
+	setColorFormat: (format: ColorFormat) => void;
+	setDisplayItems: (display: DisplayItem[]) => void;
+	setDisplayLayout: (layout: DisplayLayout) => void;
+	setFavorites: (favorites: ColorCoordinateId[]) => void;
+	setSelectedTags: (tags: ColorTag[]) => void;
+	toggleTag: (tag: ColorTag) => void;
 }) {
+	const showFavorites = selectedTags.includes("favorite");
+
 	return (
 		<div className="flex w-full flex-col flex-wrap gap-1 sm:flex-row">
 			<div className="flex flex-wrap gap-1">
@@ -67,7 +67,7 @@ export default function Tools({
 						newDisplayItems && setDisplayItems(newDisplayItems)
 					}
 				>
-					<ToggleGroupItem value="color-names">names</ToggleGroupItem>
+					<ToggleGroupItem value="names">names</ToggleGroupItem>
 				</ToggleGroup>
 				<Button
 					onClick={handleExport}
