@@ -5,9 +5,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const baseStateClasses = [
-	"data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:hover:bg-accent-foreground data-[state=on]:hover:text-accent",
-	"data-[state=off]:bg-background data-[state=off]:text-foreground data-[state=off]:hover:bg-accent data-[state=off]:hover:text-accent-foreground",
-	"disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-muted disabled:text-muted-foreground/50",
+	"data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-accent data-[state=on]:hover:text-accent-foreground",
+	"data-[state=off]:bg-secondary data-[state=off]:text-secondary-foreground data-[state=off]:hover:bg-accent data-[state=off]:hover:text-accent-foreground",
+	"disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-muted disabled:text-muted-foreground",
 ];
 
 const buttonToggleVariants = cva(
@@ -16,11 +16,11 @@ const buttonToggleVariants = cva(
 		variants: {
 			color: {
 				default: [
-					"bg-background text-foreground hover:bg-accent hover:text-accent-foreground",
+					"bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground",
 					...baseStateClasses,
 				],
 				destructive: [
-					"bg-destructive text-background hover:bg-destructive-foreground",
+					"bg-destructive text-destructive-foreground",
 					...baseStateClasses,
 				],
 			},
