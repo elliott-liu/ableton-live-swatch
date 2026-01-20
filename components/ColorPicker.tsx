@@ -205,7 +205,8 @@ export default function ColorPicker({
 											{color.tags.map((tag) => (
 												<Button
 													key={tag}
-													variant={"solid"}
+													color="default"
+													border="none"
 													className="z-10"
 													onClick={(e) => {
 														e.stopPropagation();

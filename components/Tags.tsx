@@ -32,7 +32,8 @@ export default function Tags({
 		<div className="flex w-full flex-row flex-wrap gap-1">
 			<div className="flex flex-wrap gap-1">
 				<Toggle
-					variant={"outline"}
+					color="default"
+					border="outline"
 					disabled={favoritesCount === 0 && !showFavorites}
 					pressed={showFavorites}
 					onPressedChange={(pressed) => setShowFavorites(pressed)}
@@ -52,7 +53,8 @@ export default function Tags({
 					return (
 						<Toggle
 							key={tag}
-							variant={"outline"}
+							color="default"
+							border="outline"
 							disabled={isDisabled}
 							pressed={selectedTags.includes(tag)}
 							onPressedChange={() => toggleTag(tag)}
@@ -108,7 +110,8 @@ function ColorTags({
 					<Toggle
 						key={colIndex}
 						disabled={isDisabled}
-						variant={"outline"}
+						color="default"
+						border="outline"
 						pressed={selectedTags.includes(tag)}
 						onPressedChange={() => toggleTag(tag)}
 						className={cn("hover:opacity-70", className)}

@@ -43,7 +43,9 @@ export default function ColorChip({
 									backgroundColor: getContrastColor(selectedColor.hex),
 									color: selectedColor.hex,
 								}}
-								variant={"solid"}
+								color="default"
+								border="none"
+								size="sm"
 							>
 								{tag.startsWith("cg:") ? tag.replace("cg:", "") : tag}
 							</Button>

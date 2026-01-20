@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 
 function Toggle({
 	className,
-	variant,
+	color,
+	border,
 	size,
 	...props
 }: React.ComponentProps<typeof TogglePrimitive.Root> &
@@ -17,7 +18,7 @@ function Toggle({
 	return (
 		<TogglePrimitive.Root
 			data-slot="toggle"
-			className={cn(buttonToggleVariants({ variant, size, className }))}
+			className={cn(buttonToggleVariants({ color, border, size, className }))}
 			{...props}
 		/>
 	);

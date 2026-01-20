@@ -12,13 +12,15 @@ const ToggleGroupContext = React.createContext<
 		spacing?: number;
 	}
 >({
-	variant: "outline",
+	color: "default",
+	border: "outline",
 	size: "sm",
 });
 
 function ToggleGroup({
 	className,
-	variant = "outline",
+	color = "default",
+	border = "outline",
 	size = "sm",
 	spacing = 0,
 	children,
@@ -30,7 +32,8 @@ function ToggleGroup({
 	return (
 		<ToggleGroupPrimitive.Root
 			data-slot="toggle-group"
-			data-variant={variant}
+			data-color={color}
+			data-border={border}
 			data-size={size}
 			data-spacing={spacing}
 			style={{ "--gap": spacing } as React.CSSProperties}
@@ -40,7 +43,7 @@ function ToggleGroup({
 			)}
 			{...props}
 		>
-			<ToggleGroupContext.Provider value={{ variant, size, spacing }}>
+			<ToggleGroupContext.Provider value={{ color, border, size, spacing }}>
 				{children}
 			</ToggleGroupContext.Provider>
 		</ToggleGroupPrimitive.Root>
@@ -50,7 +53,8 @@ function ToggleGroup({
 function ToggleGroupItem({
 	className,
 	children,
-	variant,
+	color,
+	border,
 	size,
 	...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
@@ -60,16 +64,18 @@ function ToggleGroupItem({
 	return (
 		<ToggleGroupPrimitive.Item
 			data-slot="toggle-group-item"
-			data-variant={context.variant || variant}
+			data-color={context.color || color}
+			data-border={context.border || border}
 			data-size={context.size || size}
 			data-spacing={context.spacing}
 			className={cn(
 				buttonToggleVariants({
-					variant: context.variant || variant,
+					color: context.color || color,
+					border: context.border || border,
 					size: context.size || size,
 				}),
 				"w-auto min-w-0 shrink-0 focus:z-10 focus-visible:z-10",
-				"data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l",
+				"data-[spacing=0]:data-[border=outline]:border-l-0 data-[spacing=0]:data-[border=outline]:first:border-l",
 				className,
 			)}
 			{...props}

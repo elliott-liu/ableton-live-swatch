@@ -1,7 +1,6 @@
-import { X } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { AlertTriangle, X } from "lucide-react";
 
-import { DisplayItem } from "@/components/Swatch";
+import { ConfirmButton } from "@/components/ConfirmButton";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ColorTag, DisplayLayout } from "@/data/colors";
@@ -70,41 +69,44 @@ export default function Tools({
 				>
 					<ToggleGroupItem value="color-names">names</ToggleGroupItem>
 				</ToggleGroup>
-				<Button onClick={handleExport} variant={"outline"}>
+				<Button
+					onClick={handleExport}
+					color="default"
+					border="outline"
+					size="sm"
+				>
 					export
 				</Button>
 			</div>
-			{favorites.size ||
-				((selectedTags.length > 0 || showFavorites) && (
-					<div className="flex flex-wrap gap-1">
-						{favorites.size > 0 && (
-							<Button
-								onClick={() => {
-									setFavorites(new Set());
-									setShowFavorites(false);
-								}}
-								variant={"outline"}
-							>
-								<X className="size-3" />
-								<span>clear favorites</span>
-							</Button>
-						)}
-						{(selectedTags.length > 0 || showFavorites) && (
-							<Button
-								onClick={() => {
-									setSelectedTags([]);
-									setShowFavorites(false);
-								}}
-								variant={"outline"}
-								disabled={!(selectedTags.length > 0 || showFavorites)}
-								role="clear tags"
-							>
-								<X className="size-3" />
-								<span>clear tag{selectedTags.length > 1 && "s"}</span>
-							</Button>
-						)}
-					</div>
-				))}
+			{(favorites.size || selectedTags.length > 0 || showFavorites) && (
+				<div className="flex flex-wrap gap-1">
+					{favorites.size > 0 && (
+						<ConfirmButton
+							onConfirm={() => setFavorites([])}
+							initialText="clear favorites"
+							confirmText="are you sure?"
+							initialIcon={<X className="size-3" />}
+							confirmIcon={<AlertTriangle className="size-3" />}
+						/>
+					)}
+
+					{(selectedTags.length > 0 || showFavorites) && (
+						<Button
+							onClick={() => {
+								setSelectedTags([]);
+							}}
+							color="default"
+							border="outline"
+							size="sm"
+							disabled={!(selectedTags.length > 0 || showFavorites)}
+							role="clear tags"
+						>
+							<X className="size-3" />
+							<span>clear tag{selectedTags.length > 1 && "s"}</span>
+						</Button>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }
