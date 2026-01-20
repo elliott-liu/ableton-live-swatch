@@ -4,75 +4,138 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklab(0.25 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--destructive-foreground: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
+	/* Ableton DetailViewBackground */
+	--background: #f2f2f2;
+	/* Ableton ControlForeground */
+	--foreground: #222222;
+
+	/* Ableton Desktop */
+	--card: #e5e5e5;
+	/* Ableton ControlForeground */
+	--card-foreground: #222222;
+
+	/* Ableton SurfaceHighlight */
+	--popover: #ffffff;
+	/* Ableton ControlForeground */
+	--popover-foreground: #222222;
+
+	/* Ableton ChosenDefault (Light Orange) */
+	--primary: #ff7f22;
+	/* Ableton ControlOnForeground */
+	--primary-foreground: #ffffff;
+
+	/* Ableton ControlBackground */
+	--secondary: #d9d9d9;
+	/* Ableton ControlForeground */
+	--secondary-foreground: #222222;
+
+	/* Ableton PreferencesTab */
+	--muted: #cfcfcf;
+	/* Ableton TextDisabled */
+	--muted-foreground: #8a8a8a;
+
+	/* Ableton SurfaceHighlight */
+	--accent: #ffffff;
+	/* Ableton ControlForeground */
+	--accent-foreground: #222222;
+
+	/* Ableton ChosenRecord (Light Red) */
+	--destructive: #ff4545;
+	/* Ableton ControlOnForeground */
+	--destructive-foreground: #ffffff;
+
+	/* Ableton SelectionFrame */
+	--border: #a8a8a8;
+	--input: #a8a8a8;
+
+	/* Ableton ChosenDefault */
+	--ring: #ff7f22;
+
+	/* Ableton Clips/Operators (Light spectrum) */
+	--chart-1: #3b5f8f;
+	--chart-2: #4ba65e;
+	--chart-3: #9b59b6;
+	--chart-4: #e67e22;
+	--chart-5: #1abc9c;
+
+	/* Sidebar using Ableton SurfaceBackground */
+	--sidebar: #d9d9d9;
+	--sidebar-foreground: #222222;
+	--sidebar-primary: #ff7f22;
+	--sidebar-primary-foreground: #ffffff;
+	--sidebar-accent: #f2f2f2;
+	--sidebar-accent-foreground: #222222;
+	--sidebar-border: #cccccc;
+	--sidebar-ring: #ff7f22;
+
 	/* Set radius to 0 for mira styling with no rounding */
 	--radius: 0rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.145 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.145 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.985 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.396 0.141 25.723);
-	--destructive-foreground: oklch(0.637 0.237 25.331);
-	--border: oklch(0.269 0 0);
-	--input: oklch(0.269 0 0);
-	--ring: oklch(0.439 0 0);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(0.269 0 0);
-	--sidebar-ring: oklch(0.439 0 0);
+	/* Ableton DetailViewBackground */
+	--background: #3e3e3e;
+	/* Ableton ControlForeground */
+	--foreground: #b5b5b5;
+
+	/* Ableton Desktop */
+	--card: #2a2a2a;
+	/* Ableton ControlForeground */
+	--card-foreground: #b5b5b5;
+
+	/* Ableton SurfaceHighlight */
+	--popover: #464646;
+	/* Ableton ControlForeground */
+	--popover-foreground: #b5b5b5;
+
+	/* Ableton ViewCheckControlEnabledOn / ChosenDefault */
+	--primary: #ffad56;
+	/* Ableton ControlOnForeground */
+	--primary-foreground: #070707;
+
+	/* Ableton ControlBackground */
+	--secondary: #1e1e1e;
+	/* Ableton ControlForeground */
+	--secondary-foreground: #b5b5b5;
+
+	/* Ableton PreferencesTab */
+	--muted: #363636;
+	/* Ableton TextDisabled */
+	--muted-foreground: #757575;
+
+	/* Ableton SurfaceHighlight */
+	--accent: #464646;
+	/* Ableton ControlForeground */
+	--accent-foreground: #b5b5b5;
+
+	/* Ableton ChosenRecord */
+	--destructive: #ff5559;
+	/* Ableton ControlOnForeground */
+	--destructive-foreground: #070707;
+
+	/* Ableton SelectionFrame */
+	--border: #757575;
+	--input: #757575;
+
+	/* Ableton ViewCheckControlEnabledOn */
+	--ring: #ffad56;
+
+	/* Ableton Operator & Range colors */
+	--chart-1: #e0d825;
+	--chart-2: #29d6cd;
+	--chart-3: #6571f6;
+	--chart-4: #f3751b;
+	--chart-5: #03c3d5;
+
+	/* Sidebar using Ableton SurfaceBackground */
+	--sidebar: #363636;
+	--sidebar-foreground: #b5b5b5;
+	--sidebar-primary: #ffad56;
+	--sidebar-primary-foreground: #070707;
+	--sidebar-accent: #464646;
+	--sidebar-accent-foreground: #b5b5b5;
+	--sidebar-border: #2a2a2a;
+	--sidebar-ring: #ffad56;
 }
 
 @theme inline {
