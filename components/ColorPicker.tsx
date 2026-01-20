@@ -1,6 +1,6 @@
-import { Check, Copy, Heart } from "lucide-react";
 import { Dispatch, SetStateAction, useMemo } from "react";
 
+import { ColorButton } from "@/components/ColorButton";
 import { DisplayItem, getLiveId } from "@/components/Swatch";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,108 +92,21 @@ export default function ColorPicker({
 
 							const stableId = getLiveId(color);
 							const isFavorite = favorites.has(stableId);
-							const layoutData = color.layout[displayLayout]!;
-							const displayKey = `${layoutData.col}-${layoutData.row}`;
 
 							return (
 								<Tooltip key={stableId}>
 									<TooltipTrigger asChild>
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												setSelectedColor(color);
-											}}
-											onDoubleClick={(e) => {
-												e.preventDefault();
-												toggleFavorite(color);
-											}}
-											className={cn(
-												"group relative box-border flex aspect-square h-full w-full items-center justify-center border border-border transition-transform hover:z-10 hover:scale-110 focus:ring-2 focus:ring-ring focus:outline-none",
-												selectedColor?.hex === color.hex &&
-													"ring-2 ring-foreground",
-											)}
-											style={{
-												backgroundColor: color.hex,
-											}}
-											aria-label={`Select ${color.name}`}
-										>
-											<Heart
-												className={cn(
-													"size-3 md:hidden",
-													"transition-all duration-150 ease-in-out",
-													isFavorite &&
-														"fill-current opacity-50 group-hover:opacity-50",
-													!isFavorite && "fill-transparent opacity-0",
-												)}
-												style={{ color: getContrastColor(color.hex) }}
-											/>
-											<div
-												className="hidden md:block"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedColor(color);
-													toggleFavorite(color);
-												}}
-											>
-												<Heart
-													className={cn(
-														"absolute top-1 left-1 size-3",
-														"transition-all duration-150 ease-in-out",
-														isFavorite &&
-															"fill-current opacity-50 group-hover:opacity-50 hover:fill-transparent hover:opacity-70",
-														!isFavorite &&
-															"fill-transparent opacity-0 group-hover:opacity-50 hover:fill-current hover:opacity-70",
-													)}
-													style={{ color: getContrastColor(color.hex) }}
-												/>
-											</div>
-											<div className="group hidden md:block">
-												{copiedColorKey === displayKey ? (
-													<Check
-														className={cn(
-															"absolute right-1 bottom-1 size-3",
-															"opacity-70",
-														)}
-														style={{ color: getContrastColor(color.hex) }}
-													/>
-												) : (
-													<div
-														onClick={(e) => {
-															e.stopPropagation();
-															setSelectedColor(color);
-															handleCopy(color);
-														}}
-													>
-														<Copy
-															className={cn(
-																"absolute right-1 bottom-1 size-3",
-																"opacity-0 group-hover:opacity-50 hover:opacity-70",
-															)}
-															style={{ color: getContrastColor(color.hex) }}
-														/>
-													</div>
-												)}
-											</div>
-											{displayItems.includes("names") && (
-												<div
-													className={cn(
-														"flex-col text-xs lowercase",
-														"hidden lg:flex",
-													)}
-												>
-													{color.name.split(" ").map((l, i) => (
-														<span
-															key={`${color.name}-line-${i}-${l}`}
-															style={{
-																color: getContrastColor(color.hex),
-															}}
-														>
-															{l}
-														</span>
-													))}
-												</div>
-											)}
-										</button>
+										<ColorButton
+											color={color}
+											copiedColorKey={copiedColorKey}
+											displayItems={displayItems}
+											handleCopy={handleCopy}
+											isFavorite={isFavorite}
+											selectedColor={selectedColor}
+											setSelectedColor={setSelectedColor}
+											stableId={stableId}
+											toggleFavorite={toggleFavorite}
+										/>
 									</TooltipTrigger>
 									<TooltipContent
 										side="top"
