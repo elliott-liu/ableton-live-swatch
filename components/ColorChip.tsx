@@ -14,7 +14,7 @@ export default function ColorChip({
 	color: ColorData;
 	toggleTag: (tag: string) => void;
 	hide?: ColorChipHideOptions[];
-}): React.ComponentProps<"button"> {
+}) {
 	const displayColorCode = !hide?.includes("colorCode");
 	const displayTags = !hide?.includes("tags");
 
@@ -54,3 +54,36 @@ export default function ColorChip({
 		</div>
 	);
 }
+
+// function backup() {
+// 	return (
+// 		<button
+// 			key={`${colorKey}-old`}
+// 			onClick={() => {
+// 				setSelectedColor(color);
+// 				handleCopy(color);
+// 			}}
+// 			className={cn(
+// 				"flex w-full items-center justify-between p-3 transition-opacity hover:opacity-90",
+// 				selectedColor?.hex === color.hex && "ring-2 ring-foreground",
+// 			)}
+// 			style={{
+// 				backgroundColor: color.hex,
+// 				color: getContrastColor(color.hex),
+// 			}}
+// 			aria-label={`Select ${color.name}`}
+// 		>
+// 			<div className="flex flex-col items-start">
+// 				<span className="font-semibold">{color.name}</span>
+// 				<span className="text-xs opacity-80">
+// 					{formatColor(color, colorFormat)}
+// 				</span>
+// 			</div>
+// 			{copiedColorKey === colorKey && (
+// 				<span className="animate-in text-[10px] font-medium fade-in-0 zoom-in-95">
+// 					copied!
+// 				</span>
+// 			)}
+// 		</button>
+// 	);
+// }
