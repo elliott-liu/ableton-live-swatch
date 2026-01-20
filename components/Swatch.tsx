@@ -243,11 +243,12 @@ export function Swatch() {
 				/>
 				<ColorPicker
 					colorFormat={colorFormat}
-					colors={filteredColors}
+					colors={colors}
 					copiedColorKey={copiedColorKey}
 					displayItems={displayItems}
 					displayLayout={displayLayout}
 					favorites={favorites}
+					filteredColors={filteredColors}
 					handleCopy={handleCopy}
 					selectedColor={selectedColor}
 					setSelectedColor={setSelectedColor}

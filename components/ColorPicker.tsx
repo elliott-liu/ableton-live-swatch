@@ -21,6 +21,7 @@ export default function ColorPicker({
 	displayItems,
 	displayLayout,
 	favorites,
+	filteredColors,
 	handleCopy,
 	selectedColor,
 	setSelectedColor,
@@ -33,6 +34,7 @@ export default function ColorPicker({
 	displayItems: DisplayItem[];
 	displayLayout: DisplayLayout;
 	favorites: Set<string>;
+	filteredColors: ColorData[];
 	handleCopy: (color: ColorData) => Promise<void>;
 	selectedColor: ColorData | null;
 	setSelectedColor: Dispatch<SetStateAction<ColorData | null>>;
@@ -56,7 +58,7 @@ export default function ColorPicker({
 			Array.from({ length: columns }, () => null),
 		);
 
-		colors.forEach((color) => {
+		filteredColors.forEach((color) => {
 			const layoutData = color.layout[displayLayout];
 			if (layoutData) {
 				const { row, col } = layoutData;
@@ -66,7 +68,7 @@ export default function ColorPicker({
 			}
 		});
 		return newGrid;
-	}, [colors, displayLayout]);
+	}, [colors, filteredColors, displayLayout]);
 
 	return (
 		<TooltipProvider delayDuration={0}>
