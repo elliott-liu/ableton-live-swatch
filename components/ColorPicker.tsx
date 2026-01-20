@@ -79,25 +79,25 @@ export default function ColorPicker({
 				)}
 			>
 				{grid.map((row, rowIndex) => (
-					<div key={`swatch-grid-row-${rowIndex}`} className="flex gap-1">
+					<div key={rowIndex} className="flex gap-1">
 						{row.map((color, colIndex) => {
 							if (!color) {
 								return (
 									<div
 										className="box-border aspect-square h-full w-full border border-dashed border-border"
-										key={`swatch-grid-empty-${rowIndex}-${colIndex}`}
+										key={`empty-${rowIndex}-${colIndex}`}
 									/>
 								);
 							}
 
 							const currentLayoutData = color.layout[displayLayout];
 							const colorKey = currentLayoutData
-								? `swatch-grid-${currentLayoutData.col}-${currentLayoutData.row}`
-								: `swatch-grid-no-layout-${color.hex}`;
+								? `${currentLayoutData.col}-${currentLayoutData.row}`
+								: `${color.hex}-no-layout`;
 							const isFavorited = favorites.has(colorKey);
 
 							return (
-								<Tooltip key={`swatch-tooltip-${colorKey}`}>
+								<Tooltip key={colorKey}>
 									<TooltipTrigger asChild>
 										<button
 											onClick={(e) => {
@@ -173,7 +173,7 @@ export default function ColorPicker({
 												>
 													{color.name.split(" ").map((l, i) => (
 														<span
-															key={`swatch-color-name-${color.name}-line-${i}-${l}`}
+															key={`${color.name}-line-${i}-${l}`}
 															style={{
 																color: getContrastColor(color.hex),
 															}}
@@ -203,7 +203,7 @@ export default function ColorPicker({
 										<div className="mt-1.5 flex flex-wrap gap-1">
 											{color.tags.map((tag) => (
 												<Button
-													key={`swatch-tooltip-tag-${tag}`}
+													key={tag}
 													variant={"solid"}
 													className="z-10"
 													onClick={(e) => {
